@@ -1,0 +1,1608 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#07111f">
+
+    <meta
+        name="description"
+        content="NOVALUX is an educational space mission design and simulation environment. Design spacecraft, explore orbital mechanics, and evaluate mission configurations."
+    >
+
+    <meta name="application-name" content="NOVALUX Mission Control">
+
+    <title>NOVALUX | Mission Control</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- Font Optimization -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+</head>
+
+<body class="prototype-gate-open">
+
+<!-- Mandatory prototype notice shown before entering the application. -->
+<div class="prototype-alert" id="prototype-alert" role="alertdialog" aria-modal="true" aria-labelledby="prototype-alert-title" aria-describedby="prototype-alert-message">
+    <div class="prototype-alert-card">
+        <div class="prototype-alert-icon" aria-hidden="true">!</div>
+        <div class="eyebrow">NOVALUX // IMPORTANT NOTICE</div>
+        <h2 id="prototype-alert-title">Prototype Notice</h2>
+        <p id="prototype-alert-message">This website is only a prototype. Features and simulations are for demonstration purposes.</p>
+        <button type="button" class="primary-button" id="prototype-enter-button">I UNDERSTAND — ENTER WEBSITE</button>
+    </div>
+</div>
+
+<div class="app-shell">
+
+    <!-- =====================================================
+         SIDEBAR / PRIMARY NAVIGATION
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <a class="brand" href="#" aria-label="NOVALUX Mission Control home">
+            <span class="brand-symbol" aria-hidden="true">N</span>
+
+            <span>
+                <strong>NOVALUX</strong>
+                <small>MISSION SYSTEMS</small>
+            </span>
+        </a>
+
+        <nav aria-label="Main navigation">
+
+            <div class="sidebar-label">OPERATIONS</div>
+
+            <button
+                type="button"
+                class="nav-item active"
+                data-view="overview"
+                aria-current="page"
+            >
+                <span aria-hidden="true">◈</span>
+                Mission Overview
+            </button>
+
+            <button
+                type="button"
+                class="nav-item"
+                data-view="designer"
+            >
+                <span aria-hidden="true">⌘</span>
+                Spacecraft Designer
+            </button>
+
+            <button
+                type="button"
+                class="nav-item"
+                data-view="simulation"
+            >
+                <span aria-hidden="true">◎</span>
+                Mission Simulation
+            </button>
+
+            <button
+                type="button"
+                class="nav-item"
+                data-view="game"
+            >
+                <span aria-hidden="true">✦</span>
+                Mission Gameplay
+            </button>
+
+            <button type="button" class="nav-item" data-view="phase5">
+                <span aria-hidden="true">✧</span>
+                Advanced Exploration
+            </button>
+
+            <button type="button" class="nav-item" data-view="expedition">
+                <span aria-hidden="true">✦</span>
+                Expedition Campaign
+            </button>
+
+            <button type="button" class="nav-item" data-view="challenge">
+                <span aria-hidden="true">✦</span>
+                Mission Design Challenge
+            </button>
+
+            <button type="button" class="nav-item" data-view="engineering">
+                <span aria-hidden="true">⚙</span>
+                Spacecraft Engineering
+            </button>
+
+            <button
+                type="button"
+                class="nav-item"
+                data-view="reports"
+            >
+                <span aria-hidden="true">▤</span>
+                Mission Reports
+            </button>
+
+        </nav>
+
+        <!-- Mission Database -->
+
+        <div class="sidebar-label mission-label">
+            MISSION DATABASE
+        </div>
+
+        <div class="mission-navigation" aria-label="Available missions">
+
+            <button
+                type="button"
+                class="mission-link"
+                data-mission="earth"
+            >
+                <span class="mission-dot earth-dot" aria-hidden="true"></span>
+                Earth Observation
+            </button>
+
+            <button
+                type="button"
+                class="mission-link"
+                data-mission="moon"
+            >
+                <span class="mission-dot moon-dot" aria-hidden="true"></span>
+                Lunar Exploration
+            </button>
+
+            <button
+                type="button"
+                class="mission-link"
+                data-mission="mars"
+            >
+                <span class="mission-dot mars-dot" aria-hidden="true"></span>
+                Mars Exploration
+            </button>
+
+        </div>
+
+        <div class="sidebar-bottom">
+
+            <div class="system-status">
+                <span class="status-light" aria-hidden="true"></span>
+                SYSTEM ONLINE
+            </div>
+
+            <small>NOVALUX ALPHA 0.2</small>
+
+        </div>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN APPLICATION
+    ====================================================== -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <header class="topbar">
+
+            <div>
+                <div class="breadcrumb">
+                    NOVALUX / OPERATIONS
+                </div>
+
+                <h1 id="page-title">
+                    Mission Overview
+                </h1>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="mission-id">
+                    <small>ACTIVE MISSION</small>
+
+                    <strong id="mission-id">
+                        NLX-EARTH-001
+                    </strong>
+                </div>
+
+                <button
+                    type="button"
+                    class="save-button"
+                    id="save-button"
+                >
+                    SAVE DESIGN
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             OVERVIEW
+        ================================================== -->
+
+        <section
+            class="view active"
+            id="overview-view"
+            aria-label="Mission overview"
+        >
+
+            <div class="welcome-banner">
+
+                <div class="welcome-content">
+
+                    <div class="eyebrow">
+                        MISSION DESIGN ENVIRONMENT
+                    </div>
+
+                    <h2>Explore. Design. Discover.</h2>
+
+                    <p>
+                        Build spacecraft, plan scientific missions,
+                        and explore the engineering challenges of space.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="start-design"
+                    >
+                        OPEN MISSION DESIGNER →
+                    </button>
+
+                </div>
+
+                <div
+                    class="planet-visual"
+                    id="planet-visual"
+                    aria-hidden="true"
+                >
+                    <div class="planet-orbit orbit-one"></div>
+                    <div class="planet-orbit orbit-two"></div>
+                    <div class="planet"></div>
+                </div>
+
+                <div class="banner-coordinate">
+                    MISSION CONTROL // 001
+                </div>
+
+            </div>
+
+
+            <!-- Mission Catalogue -->
+
+            <div class="section-heading">
+
+                <div>
+                    <div class="eyebrow">MISSION CATALOGUE</div>
+                    <h2>Select your destination</h2>
+                </div>
+
+                <span class="catalogue-count">
+                    03 AVAILABLE MISSIONS
+                </span>
+
+            </div>
+
+            <div
+                class="mission-grid"
+                id="mission-grid"
+            ></div>
+
+
+            <!-- Overview Panels -->
+
+            <div class="overview-bottom">
+
+                <div class="panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+                            <div class="eyebrow">CURRENT PROJECT</div>
+                            <h3>Mission Configuration</h3>
+                        </div>
+
+                        <span class="status-tag">
+                            IN PROGRESS
+                        </span>
+
+                    </div>
+
+                    <div class="project-summary">
+
+                        <div>
+                            <small>DESTINATION</small>
+                            <strong id="summary-destination">Earth</strong>
+                        </div>
+
+                        <div>
+                            <small>SPACECRAFT</small>
+                            <strong id="summary-spacecraft">Unconfigured</strong>
+                        </div>
+
+                        <div>
+                            <small>DESIGN SCORE</small>
+                            <strong id="summary-score">--</strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="eyebrow">DEVELOPMENT STATUS</div>
+
+                    <h3>Engineering Systems</h3>
+
+                    <div class="progress-row">
+                        <span>Spacecraft configuration</span>
+                        <span id="config-progress-label">0%</span>
+                    </div>
+
+                    <div
+                        class="progress-track"
+                        role="progressbar"
+                        aria-label="Spacecraft configuration"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                        aria-valuenow="0"
+                    >
+                        <div
+                            class="progress-fill"
+                            id="config-progress"
+                        ></div>
+                    </div>
+
+                    <div class="progress-row">
+                        <span>Mission evaluation</span>
+                        <span id="evaluation-status">NOT RUN</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SPACECRAFT DESIGNER
+        ================================================== -->
+
+        <section
+            class="view"
+            id="designer-view"
+            aria-label="Spacecraft designer"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <div class="eyebrow">ENGINEERING WORKSPACE</div>
+
+                    <h2>Spacecraft Designer</h2>
+
+                    <p class="section-description">
+                        Assemble your spacecraft by selecting engineering
+                        components. Every selection affects your mission resources.
+                    </p>
+                </div>
+
+                <span class="status-tag">
+                    DESIGN MODE
+                </span>
+
+            </div>
+
+
+            <div class="designer-layout">
+
+
+                <!-- Designer Main Panel -->
+
+                <div class="designer-main panel">
+
+                    <div class="panel-heading">
+
+                        <div>
+                            <div class="eyebrow">
+                                01 / MISSION PARAMETERS
+                            </div>
+
+                            <h3 id="designer-mission-name">
+                                Earth Observation
+                            </h3>
+                        </div>
+
+                        <span
+                            class="mission-number"
+                            id="designer-mission-code"
+                        >
+                            NLX-001
+                        </span>
+
+                    </div>
+
+
+                    <div class="field-group">
+
+                        <label for="mission-objective">
+                            Scientific objective
+                        </label>
+
+                        <select id="mission-objective"></select>
+
+                    </div>
+
+
+                    <div class="divider"></div>
+
+
+                    <!-- Component Catalogue -->
+
+                    <div class="component-browser-header">
+
+                        <div>
+                            <div class="eyebrow">
+                                02 / SPACECRAFT ASSEMBLY
+                            </div>
+
+                            <h3>Engineering Component Catalogue</h3>
+
+                            <p class="section-description">
+                                Explore available technologies and select
+                                one component from each subsystem.
+                            </p>
+                        </div>
+
+                        <span
+                            class="component-count"
+                            id="component-count"
+                        >
+                            0 COMPONENTS
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        class="component-tabs"
+                        id="component-tabs"
+                        role="group"
+                        aria-label="Component categories"
+                    >
+
+                        <button
+                            type="button"
+                            class="component-tab active"
+                            data-category="platform"
+                        >
+                            Platform
+                        </button>
+
+                        <button
+                            type="button"
+                            class="component-tab"
+                            data-category="propulsion"
+                        >
+                            Propulsion
+                        </button>
+
+                        <button
+                            type="button"
+                            class="component-tab"
+                            data-category="power"
+                        >
+                            Power
+                        </button>
+
+                        <button
+                            type="button"
+                            class="component-tab"
+                            data-category="instrument"
+                        >
+                            Instruments
+                        </button>
+
+                        <button
+                            type="button"
+                            class="component-tab"
+                            data-category="communication"
+                        >
+                            Communications
+                        </button>
+
+                        <button
+                            type="button"
+                            class="component-tab"
+                            data-category="launcher"
+                        >
+                            Launch Vehicle
+                        </button>
+
+                    </div>
+
+
+                    <div
+                        class="category-description"
+                        id="category-description"
+                    ></div>
+
+                    <div
+                        class="component-grid"
+                        id="component-grid"
+                    ></div>
+
+
+                    <div class="divider"></div>
+
+
+                    <!-- Mission Duration -->
+
+                    <div class="panel-heading">
+
+                        <div>
+                            <div class="eyebrow">
+                                03 / MISSION CONSTRAINTS
+                            </div>
+
+                            <h3>Mission Duration</h3>
+                        </div>
+
+                        <strong
+                            class="slider-value"
+                            id="duration-value"
+                        >
+                            12 months
+                        </strong>
+
+                    </div>
+
+
+                    <input
+                        type="range"
+                        id="duration"
+                        min="1"
+                        max="60"
+                        value="12"
+                        aria-label="Mission duration in months"
+                    >
+
+                    <div class="slider-labels">
+                        <span>1 MONTH</span>
+                        <span>60 MONTHS</span>
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="primary-button full-button"
+                        id="evaluate-button"
+                    >
+                        EVALUATE SPACECRAFT DESIGN →
+                    </button>
+
+                </div>
+
+
+                <!-- Designer Sidebar -->
+
+                <div class="designer-side">
+
+
+                    <!-- Spacecraft Preview -->
+
+                    <div class="panel spacecraft-panel">
+
+                        <div class="eyebrow">
+                            SPACECRAFT CONFIGURATION
+                        </div>
+
+                        <div
+                            class="spacecraft-preview-image"
+                            id="spacecraft-preview-image"
+                        >
+
+                            <div class="preview-placeholder">
+                                <span>SPACECRAFT</span>
+                                <small>SELECT A PLATFORM</small>
+                            </div>
+
+                        </div>
+
+                        <h3 id="spacecraft-preview-name">
+                            Unconfigured Spacecraft
+                        </h3>
+
+                        <p id="spacecraft-preview-description">
+                            Select a spacecraft platform to begin.
+                        </p>
+
+                    </div>
+
+
+                    <!-- Assembly Summary -->
+
+                    <div class="panel">
+
+                        <div class="eyebrow">
+                            SELECTED COMPONENTS
+                        </div>
+
+                        <h3>Assembly Summary</h3>
+
+                        <div
+                            id="assembly-summary"
+                            class="assembly-summary"
+                        >
+                            <p class="empty-summary">
+                                No components selected.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Resource Allocation -->
+
+                    <div class="panel">
+
+                        <div class="eyebrow">
+                            LIVE ENGINEERING DATA
+                        </div>
+
+                        <h3>Resource Allocation</h3>
+
+
+                        <div class="metric">
+
+                            <div>
+                                <span>Total mass</span>
+                                <strong id="mass-value">-- kg</strong>
+                            </div>
+
+                            <div class="metric-track">
+                                <div id="mass-bar"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div>
+                                <span>Power generation</span>
+                                <strong id="power-value">-- W</strong>
+                            </div>
+
+                            <div class="metric-track">
+                                <div id="power-bar"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="metric">
+
+                            <div>
+                                <span>Estimated budget</span>
+                                <strong id="budget-value">-- M</strong>
+                            </div>
+
+                            <div class="metric-track">
+                                <div id="budget-bar"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="resource-note">
+                            Preliminary game-design estimates.
+                            These values are not certified engineering specifications.
+                        </div>
+
+                    </div>
+
+
+                    <!-- Compatibility -->
+
+                    <div class="panel">
+
+                        <div class="eyebrow">
+                            SYSTEM COMPATIBILITY
+                        </div>
+
+                        <h3>Engineering Diagnostics</h3>
+
+                        <div
+                            id="compatibility-list"
+                            class="compatibility-list"
+                        >
+                            <p>
+                                Configure your spacecraft to view diagnostics.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Readiness -->
+
+                    <div class="panel">
+
+                        <div class="eyebrow">
+                            DESIGN READINESS
+                        </div>
+
+                        <div
+                            class="readiness-score"
+                            id="readiness-score"
+                        >
+                            --
+                        </div>
+
+                        <p id="readiness-description">
+                            Configure your spacecraft to begin evaluation.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             MISSION SIMULATION
+        ================================================== -->
+
+        <section
+            class="view"
+            id="simulation-view"
+            aria-label="Mission simulation"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <div class="eyebrow">MISSION EXECUTION</div>
+
+                    <h2>Mission Simulation</h2>
+
+                    <p class="section-description">
+                        Review your design and run a preliminary mission evaluation.
+                    </p>
+                </div>
+
+                <span class="status-tag">
+                    SIMULATION ENVIRONMENT
+                </span>
+
+            </div>
+
+
+            <!-- Original Mission Evaluation Panel -->
+
+            <div class="panel simulation-panel">
+
+                <div
+                    class="simulation-orbit"
+                    aria-label="Mission orbit illustration"
+                >
+
+                    <div
+                        class="simulation-planet"
+                        id="simulation-planet"
+                    ></div>
+
+                    <div class="simulation-path"></div>
+
+                    <div
+                        class="simulation-spacecraft"
+                        id="simulation-spacecraft"
+                    >
+                        ◆
+                    </div>
+
+                </div>
+
+
+                <div class="simulation-info">
+
+                    <div class="eyebrow">
+                        ACTIVE SIMULATION
+                    </div>
+
+                    <h3 id="simulation-mission-name">
+                        Earth Observation
+                    </h3>
+
+                    <p id="simulation-description">
+                        Your mission is ready for preliminary evaluation.
+                    </p>
+
+                    <button
+                        type="button"
+                        class="primary-button"
+                        id="run-simulation"
+                    >
+                        RUN MISSION EVALUATION →
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Original Evaluation Results -->
+
+            <div
+                class="panel results-panel"
+                id="results-panel"
+                aria-live="polite"
+            >
+
+                <div class="eyebrow">
+                    SIMULATION OUTPUT
+                </div>
+
+                <h3>Awaiting Mission Evaluation</h3>
+
+                <p>
+                    Configure your spacecraft and run the evaluation
+                    to receive a report.
+                </p>
+
+            </div>
+
+            <!-- Orbital Simulation Workspace
+                 Created dynamically by simulation-bootstrap.js -->
+
+        </section>
+
+
+        <!-- =================================================
+             MISSION GAMEPLAY
+        ================================================== -->
+
+        <section
+            class="view"
+            id="game-view"
+            aria-label="Mission gameplay"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <div class="eyebrow">
+                        MISSION EXECUTION / FIELD OPERATIONS
+                    </div>
+
+                    <h2 id="game-title">
+                        Mission Gameplay
+                    </h2>
+
+                    <p
+                        class="section-description"
+                        id="game-description"
+                    >
+                        Complete your mission objectives.
+                    </p>
+                </div>
+
+                <span
+                    class="status-tag"
+                    id="game-status"
+                >
+                    STANDBY
+                </span>
+
+            </div>
+
+
+            <div class="game-layout">
+
+
+                <!-- Game Main Panel -->
+
+                <div class="panel game-main-panel">
+
+                    <div class="game-topline">
+
+                        <span id="game-objective">
+                            MISSION OBJECTIVE
+                        </span>
+
+                        <span id="game-timer">
+                            TIME: 45
+                        </span>
+
+                    </div>
+
+
+                    <div class="game-canvas-wrap">
+
+                        <canvas
+                            id="mission-canvas"
+                            width="900"
+                            height="460"
+                            aria-label="Interactive mission gameplay area"
+                        >
+                            Your browser does not support the canvas element.
+                        </canvas>
+
+
+                        <div
+                            class="game-overlay"
+                            id="game-overlay"
+                        >
+
+                            <div>
+
+                                <div class="eyebrow">
+                                    MISSION READY
+                                </div>
+
+                                <h3 id="game-overlay-title">
+                                    Prepare for deployment
+                                </h3>
+
+                                <p id="game-overlay-description">
+                                    Press the launch button to begin.
+                                </p>
+
+                                <button
+                                    type="button"
+                                    class="primary-button"
+                                    id="game-start-button"
+                                    disabled
+                                >
+                                    MISSION LOCKED — LAUNCH REQUIRED
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Gameplay Controls -->
+
+                    <div class="game-controls">
+
+                        <div>
+                            <small>CONTROLS</small>
+
+                            <strong id="game-controls-description">
+                                Use ← → or A / D to move
+                            </strong>
+                        </div>
+
+
+                        <div
+                            class="game-control-buttons"
+                            role="group"
+                            aria-label="Mission movement controls"
+                        >
+
+                            <button type="button" id="game-left" aria-label="Move left">
+                                ←
+                            </button>
+
+                            <button type="button" id="game-up" aria-label="Move up">
+                                ↑
+                            </button>
+
+                            <button type="button" id="game-down" aria-label="Move down">
+                                ↓
+                            </button>
+
+                            <button type="button" id="game-right" aria-label="Move right">
+                                →
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Game Sidebar -->
+
+                <div class="game-sidebar">
+
+
+                    <!-- Telemetry -->
+
+                    <div class="panel telemetry-panel">
+
+                        <div class="eyebrow">
+                            LIVE SPACECRAFT TELEMETRY
+                        </div>
+
+                        <h3>System Status</h3>
+
+
+                        <div class="telemetry-item">
+
+                            <div>
+                                <span>POWER LEVEL</span>
+                                <strong id="telemetry-power">100%</strong>
+                            </div>
+
+                            <div class="telemetry-track">
+                                <div id="telemetry-power-bar"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="telemetry-item">
+
+                            <div>
+                                <span>FUEL LEVEL</span>
+                                <strong id="telemetry-fuel">100%</strong>
+                            </div>
+
+                            <div class="telemetry-track">
+                                <div id="telemetry-fuel-bar"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="telemetry-item">
+
+                            <div>
+                                <span>HULL INTEGRITY</span>
+                                <strong id="telemetry-hull">100%</strong>
+                            </div>
+
+                            <div class="telemetry-track">
+                                <div id="telemetry-hull-bar"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="telemetry-item">
+
+                            <div>
+                                <span>COMMUNICATION</span>
+                                <strong id="telemetry-communication">100%</strong>
+                            </div>
+
+                            <div class="telemetry-track">
+                                <div id="telemetry-communication-bar"></div>
+                            </div>
+
+                        </div>
+
+
+                        <div class="telemetry-item">
+
+                            <div>
+                                <span>MISSION PROGRESS</span>
+                                <strong id="telemetry-progress">0%</strong>
+                            </div>
+
+                            <div class="telemetry-track">
+                                <div id="telemetry-progress-bar"></div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Spacecraft Status -->
+
+                    <div class="panel">
+
+                        <div class="eyebrow">
+                            ACTIVE SPACECRAFT
+                        </div>
+
+                        <h3 id="game-spacecraft-name">
+                            Unconfigured
+                        </h3>
+
+                        <div class="game-stat">
+                            <span>Power generation</span>
+                            <strong id="game-power-generation">-- W</strong>
+                        </div>
+
+                        <div class="game-stat">
+                            <span>Power demand</span>
+                            <strong id="game-power-demand">-- W</strong>
+                        </div>
+
+                        <div class="game-stat">
+                            <span>Mission duration</span>
+                            <strong id="game-duration">--</strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Mission Checklist -->
+
+                    <div class="panel">
+
+                        <div class="eyebrow">
+                            MISSION OBJECTIVES
+                        </div>
+
+                        <h3>Flight Checklist</h3>
+
+                        <div
+                            class="game-checklist"
+                            id="game-checklist"
+                        >
+                            <p>Awaiting mission deployment.</p>
+                        </div>
+
+                    </div>
+
+
+                    <button
+                        type="button"
+                        class="primary-button full-button"
+                        id="game-restart-button"
+                    >
+                        RESTART MISSION
+                    </button>
+
+                    <button
+                        type="button"
+                        class="save-button full-button"
+                        id="game-back-button"
+                    >
+                        RETURN TO MISSION CONTROL
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PHASE 5 — ADVANCED SPACE EXPLORATION -->
+        <section class="view" id="phase5-view" aria-label="Phase 5 advanced space exploration">
+            <div class="section-heading">
+                <div><div class="eyebrow">NOVALUX / PHASE 5</div><h2>Advanced Space Exploration</h2>
+                <p class="section-description">Operate reusable vehicles, rendezvous with an orbital station, explore a planetary surface, and manage a crew. Each activity has live controls and simplified educational physics.</p></div>
+                <span class="status-tag" id="p5-global-status">READY</span>
+            </div>
+            <div class="p6-integration panel" aria-label="Integrated spacecraft and mission progress">
+                <div class="p6-integration-main">
+                    <div class="eyebrow">PHASE 6 FOUNDATION · LIVE DESIGN LINK</div>
+                    <h3 id="p6-craft-name">Loading spacecraft design…</h3>
+                    <p id="p6-craft-summary">Phase 5 reads the active spacecraft configuration from the NOVALUX designer.</p>
+                </div>
+                <div class="p6-progress" aria-live="polite">
+                    <span>MISSION ACTIVITIES COMPLETED</span>
+                    <strong id="p6-progress-count">0 / 4</strong>
+                    <div class="p6-progress-track"><i id="p6-progress-fill"></i></div>
+                </div>
+                <button class="save-button" type="button" id="p6-refresh-design">REFRESH DESIGN</button>
+            </div>
+            <div class="p5-tabs" role="tablist" aria-label="Phase 5 activities">
+                <button class="p5-tab active" type="button" data-p5-tab="reentry">01 · Re-entry</button>
+                <button class="p5-tab" type="button" data-p5-tab="docking">02 · Docking</button>
+                <button class="p5-tab" type="button" data-p5-tab="rover">03 · Rover</button>
+                <button class="p5-tab" type="button" data-p5-tab="crew">04 · Crew systems</button>
+            </div>
+            <div class="p5-workspace panel">
+                <div class="p5-workspace-head"><div><div class="eyebrow" id="p5-kicker">ATMOSPHERIC FLIGHT</div>
+                    <h3 id="p5-title">Reusable spacecraft re-entry</h3><p id="p5-description">Guide a returning vehicle through the upper atmosphere, manage heating, and deploy its parachute before touchdown.</p></div>
+                    <div class="p5-actions"><button class="save-button" type="button" id="p5-reset">RESET</button><button class="primary-button" type="button" id="p5-start">START SIMULATION</button></div>
+                </div>
+                <div class="p5-stage"><canvas id="p5-canvas" width="1000" height="520" aria-label="Interactive Phase 5 simulation"></canvas><canvas id="p5-3d-canvas" width="1000" height="520" aria-label="Interactive three-dimensional rover and orbital docking simulation"></canvas>
+                    <div class="p5-stage-overlay" id="p5-overlay"><div class="eyebrow">MISSION READY</div><strong id="p5-overlay-title">Begin atmospheric entry</strong><p id="p5-overlay-copy">Use the controls to steer and manage the vehicle. The simulation begins paused.</p></div>
+                </div>
+                <div class="p5-time-control" aria-label="Simulation time controls">
+                    <div class="p5-time-heading"><div><div class="eyebrow">MISSION TIME CONTROL</div><label for="p5-time-scale">SIMULATION SPEED</label></div><output id="p5-time-value" for="p5-time-scale">1.0× REAL TIME</output></div>
+                    <input id="p5-time-scale" type="range" min="0.5" max="20" step="0.5" value="1" aria-describedby="p5-time-help">
+                    <div class="p5-time-scale-labels"><span>0.5× SLOW</span><span>1× NORMAL</span><span>20× FAST</span></div>
+                    <p id="p5-time-help">Adjusts mission time for all four Phase 5 activities. Physics uses smaller internal steps at higher speeds to keep the simulation stable. You can change speed while running.</p>
+                </div>
+                <div class="p5-telemetry" aria-live="polite">
+                    <div><span id="p5-label-a">ALTITUDE</span><strong id="p5-metric-a">120.0 km</strong></div>
+                    <div><span id="p5-label-b">VELOCITY</span><strong id="p5-metric-b">7,800 m/s</strong></div>
+                    <div><span id="p5-label-c">HEAT LOAD</span><strong id="p5-metric-c">0%</strong></div>
+                    <div><span>MISSION STATUS</span><strong id="p5-metric-d">STANDBY</strong></div>
+                </div>
+                <div class="p5-control-area"><div><div class="eyebrow">FLIGHT CONTROLS</div><p id="p5-controls-help">Use A / D or the buttons to bank. Deploy the parachute below 12 km.</p></div>
+                    <div class="p5-control-buttons" id="p5-controls"><button type="button" data-p5-control="left">◀ BANK</button><button type="button" data-p5-control="right">BANK ▶</button><button type="button" data-p5-action="parachute">DEPLOY PARACHUTE</button></div>
+                </div>
+                <div class="p5-event-log" id="p5-log" aria-live="polite">SYSTEM: Awaiting simulation start.</div>
+            </div>
+            <div class="p5-disclaimer"><strong>Model scope:</strong> Educational simplified models, not engineering-grade flight software. Re-entry uses a 2D atmosphere/drag/thermal proxy; docking uses a linearized Clohessy–Wiltshire relative-orbit model; rover terrain is a navigable 3D educational environment; crew resources use a rate-based life-support budget.</div>
+        </section>
+
+
+        <!-- PHASE 7 — UNIFIED EXPEDITION CAMPAIGN -->
+        <section class="view" id="engineering-view" aria-label="Advanced 3D spacecraft engineering">
+          <div id="engineering-bay">
+            <div class="section-heading"><div><div class="eyebrow">PHASE 8 / FINAL ENGINEERING SYSTEM</div><h2>Advanced Spacecraft Engineering</h2><p class="section-description">Assemble a modular spacecraft, deploy hardware, calculate mass properties, operate propulsion, and test component failures.</p></div><span class="status-tag">ENGINEERING MODE</span></div>
+            <div class="eng-layout">
+                <div class="panel eng-main"><div class="panel-heading"><div><div class="eyebrow">01 / LIVE 3D ASSEMBLY</div><h3>Spacecraft Assembly Bay</h3></div><div class="eng-camera-actions"><button class="secondary-button" id="eng-fit" type="button">FIT ENTIRE SPACECRAFT</button><button class="secondary-button" id="eng-sync" type="button">IMPORT DESIGNER CONFIGURATION</button></div></div><div id="eng-viewport" class="eng-viewport" aria-label="Interactive 3D spacecraft preview"></div><p class="eng-hint">Drag to rotate · Scroll to zoom · Components attach at defined mounting points.</p><div class="eng-component-grid">
+                    <button type="button" data-part="bus"><b>Primary structure</b><small>Core mount · 120 kg</small></button>
+                    <button type="button" data-part="engine"><b>Chemical engine</b><small>Aft mount · 4,200 N</small></button>
+                    <button type="button" data-part="tank"><b>Propellant tank</b><small>Aft mount · 240 kg fuel</small></button>
+                    <button type="button" data-part="solar"><b>Solar array</b><small>Port mount · 180 W</small></button>
+                    <button type="button" data-part="antenna"><b>High-gain antenna</b><small>Top mount</small></button>
+                    <button type="button" data-part="instrument"><b>Science instrument</b><small>Forward mount</small></button>
+                    <button type="button" data-part="radiator"><b>Thermal radiator</b><small>Starboard mount</small></button>
+                    <button type="button" data-part="rtg"><b>Radioisotope power unit</b><small>Starboard mount · 55 W</small></button>
+                </div><div class="eng-toolbar"><button type="button" class="secondary-button" id="eng-reset">RESTORE REFERENCE ASSEMBLY</button><span id="eng-status" role="status" aria-live="polite">Reference spacecraft assembly loaded.</span></div></div>
+                <aside class="eng-side">
+                    <div class="panel"><div class="eyebrow">02 / INSTALLED HARDWARE</div><h3>Assembly Manifest</h3><div id="eng-parts" class="eng-parts"></div></div>
+                    <div class="panel"><div class="eyebrow">03 / REAL-TIME ENGINEERING</div><h3>Mass Properties</h3><div class="eng-metrics"><div><span>Total mass</span><b id="eng-mass">—</b></div><div><span>Dry mass</span><b id="eng-dry">—</b></div><div><span>Propellant mass</span><b id="eng-fuel">—</b></div><div><span>Center of mass (x, y, z)</span><b id="eng-com">—</b></div><div><span>Available thrust</span><b id="eng-thrust">—</b></div><div><span>Deployed solar power</span><b id="eng-power">—</b></div><div><span>Ideal thrust acceleration</span><b id="eng-accel">—</b></div></div></div>
+                    <div class="panel"><div class="eyebrow">04 / PROPULSION TEST STAND</div><h3>Engine & Fuel Operations</h3><label for="eng-throttle">Throttle</label><input id="eng-throttle" type="range" min="0" max="1" step="0.05" value="1"><label for="eng-burn-seconds">Burn duration (seconds)</label><input id="eng-burn-seconds" type="number" min="1" max="600" value="10"><p class="eng-fuel-readout">Tank inventory: <b id="eng-fuel-level">—</b></p><button class="primary-button full-button" id="eng-burn" type="button">EXECUTE ENGINE TEST BURN</button></div>
+                    <div class="panel"><div class="eyebrow">05 / SYSTEM HEALTH</div><h3>Damage & Failure Testing</h3><p class="section-description">Use “Simulate failure” on an installed component. Failed engines and solar arrays are removed from available thrust and power until repaired.</p></div>
+                </aside>
+            </div>
+            <p class="resource-note">Engineering values are illustrative educational simulation values, not flight-qualified design data. The model assumes idealized component geometry and simplified propellant consumption.</p>
+          </div>
+        </section>
+
+        <section class="view" id="expedition-view" aria-label="NOVALUX unified expedition campaign">
+          <div class="section-heading"><div><div class="eyebrow">NOVALUX / PHASE 7 · UNIFIED CAMPAIGN</div><h2>Expedition Command</h2><p class="section-description">Build an expedition spacecraft, plan Earth–Moon–Mars missions, expand an orbital station, manage crew contingencies and conduct science. Campaign progress is saved in this browser.</p></div><span class="status-tag">CAMPAIGN</span></div>
+          <div class="ex-hero panel"><div><div class="eyebrow">PERSISTENT MISSION PROFILE</div><h3 id="ex-rank">CADET</h3><p id="ex-design-link">Checking spacecraft designer connection…</p><div class="ex-progress"><i id="ex-progress"></i></div><small id="ex-progress-label">0 / 7 campaign milestones</small></div><div id="ex-status" class="ex-status" role="status" aria-live="polite">Campaign initialized.</div><div class="ex-wallet"><div><small>EXPERIENCE</small><b id="ex-xp">0 XP</b></div><div><small>MISSION CREDITS</small><b id="ex-credits">1,200 CR</b></div></div></div>
+          <div class="ex-grid">
+            <article class="panel ex-card ex-wide"><div class="eyebrow">01 · MODULAR SPACECRAFT CONSTRUCTION</div><h3>Expedition vehicle assembly</h3><p>Configure a modular spacecraft architecture. Mass, electrical power and component costs update as you add or remove modules.</p><div class="ex-build-layout"><div id="ex-parts" class="ex-parts"></div><div class="ex-stats"><div><small>ASSEMBLED MASS</small><b id="ex-ship-mass">—</b></div><div><small>AVAILABLE POWER</small><b id="ex-ship-power">—</b></div><div><small>COMPONENT VALUE</small><b id="ex-ship-cost">—</b></div></div></div></article>
+            <article class="panel ex-card"><div class="eyebrow">02 · EARTH–MOON–MARS MISSION PLANNING</div><h3>Interplanetary flight plan</h3><label for="ex-destination">Destination</label><select id="ex-destination"><option value="earth">Earth orbit</option><option value="moon">Moon</option><option value="mars">Mars</option></select><div class="ex-stats"><div><small>ESTIMATED TRANSFER</small><b id="ex-transfer-days">—</b></div><div><small>SCHEMATIC DISTANCE</small><b id="ex-distance">—</b></div><div><small>MODELED Δv BUDGET</small><b id="ex-dv">—</b></div></div><p class="ex-note">Planning estimates are educational placeholders; mission-specific launch windows, ephemerides, finite burns and navigation constraints are not yet solved.</p><div class="ex-actions"><button class="save-button" id="ex-configure-mission">CONFIGURE IN DESIGNER</button><button class="primary-button" id="ex-open-flight">OPEN FLIGHT OPERATIONS</button></div><button class="save-button" id="ex-next-step">RECORD CAMPAIGN CHECKPOINT</button><div id="ex-mission-steps" class="ex-steps"></div></article>
+            <article class="panel ex-card"><div class="eyebrow">03 · SPACE STATION CONSTRUCTION</div><h3>Orbital outpost modules</h3><p>Spend campaign credits to expand a station with laboratories, docking, crew quarters, power and life-support research.</p><div id="ex-station-modules" class="ex-module-list"></div></article>
+            <article class="panel ex-card"><div class="eyebrow">04 · CREW & EMERGENCY OPERATIONS</div><h3>Expedition crew roster</h3><div id="ex-crew" class="ex-crew"></div><div id="ex-emergency" class="ex-emergency">No active emergency.</div><div class="ex-actions"><button class="save-button" id="ex-trigger-emergency">SIMULATE EMERGENCY</button><button class="primary-button" id="ex-resolve-emergency">EXECUTE RESPONSE</button></div><p class="ex-note">Crew health and stress are simplified game-state indicators, not medical models.</p></article>
+            <article class="panel ex-card ex-wide"><div class="eyebrow">05 · SCIENTIFIC EXPERIMENTS & DISCOVERIES</div><h3>Research programme</h3><p>Run experiments across lunar, Martian and orbital environments. Each completed experiment records a discovery and awards campaign rewards.</p><div id="ex-experiments" class="ex-experiments"></div></article>
+            <article class="panel ex-card ex-wide"><div class="eyebrow">06 · PERSISTENT CAMPAIGN & REWARDS</div><h3>Expedition record</h3><p>Mission checkpoints, discoveries, credits, experience and station construction persist in browser storage.</p><ul id="ex-log" class="ex-log"><li>Campaign initialized.</li></ul><button class="save-button" id="ex-reset-campaign">RESET CAMPAIGN</button></article>
+          </div>
+          <p class="ex-disclaimer">NOVALUX is an independent educational simulator. This campaign layer provides interactive planning and progression systems, not validated aerospace engineering tools. Transfer budgets, mission durations, crew indicators and construction costs are simplified game parameters. The existing Phase 1–6 simulations remain available as separate operational workspaces.</p>
+        </section>
+
+        <section class="view" id="challenge-view" aria-label="Space Mission Design Challenge">
+          <div class="section-heading"><div><div class="eyebrow">NOVALUX / INTEGRATED MISSION DESIGN</div><h2>Space Mission Design Challenge</h2><p class="section-description">Design, evaluate, operate and compare complete educational mission architectures. Every major choice affects other resources.</p></div><span class="status-tag">CHALLENGE MODE</span></div>
+          <div class="ch-grid">
+            <article class="panel ch-card ch-wide">
+              <div class="eyebrow">01 · MISSION BRIEF & DIFFICULTY</div><h3>Define your mission</h3>
+              <div class="ch-fields">
+                <label>Mission name<input id="ch-name" maxlength="48" value="Asteria Science Pathfinder"></label>
+                <label>Objective<select id="ch-objective"><option value="earth">Earth observation</option><option value="moon">Lunar science</option><option value="mars" selected>Mars exploration</option><option value="deep">Deep-space astronomy</option></select></label>
+                <label>Difficulty<select id="ch-difficulty"><option value="beginner">Beginner</option><option value="standard" selected>Standard</option><option value="expert">Expert</option></select></label>
+                <label>Mission lifetime (years)<input id="ch-lifetime" type="number" min="0.5" max="20" step="0.5" value="3"></label>
+              </div>
+              <p class="ch-help">Difficulty changes starting budget, engineering margins and event severity. Mission lifetime affects reliability exposure, operations cost and power/data planning.</p>
+            </article>
+            <article class="panel ch-card">
+              <div class="eyebrow">02 · TEAM COLLABORATION</div><h3>Mission team (up to four)</h3>
+              <label>Team size<select id="ch-team-size"><option>1</option><option>2</option><option selected>4</option></select></label>
+              <div id="ch-team" class="ch-team"></div>
+              <p class="ch-help">Shared-device cooperative workflow with role assignments and required team sign-offs. This is not remote/network multiplayer.</p>
+            </article>
+            <article class="panel ch-card ch-wide">
+              <div class="eyebrow">03 · SPACECRAFT, PAYLOAD & LAUNCH</div><h3>Configure the mission architecture</h3>
+              <div class="ch-fields">
+                <label>Launch vehicle<select id="ch-launch"><option value="light">Light launcher · 1,500 kg</option><option value="medium" selected>Medium launcher · 6,000 kg</option><option value="heavy">Heavy launcher · 18,000 kg</option></select></label>
+                <label>Orbit / trajectory<select id="ch-orbit"><option value="leo">Low Earth orbit</option><option value="geo">Geostationary orbit</option><option value="polar">Sun-synchronous polar orbit</option><option value="lunar">Lunar transfer / orbit</option><option value="mars" selected>Interplanetary transfer</option></select></label>
+                <label>Spacecraft bus<select id="ch-bus"><option value="compact">Compact bus</option><option value="standard" selected>Standard bus</option><option value="heavy">Heavy-duty bus</option></select></label>
+                <label>Propulsion<select id="ch-propulsion"><option value="chemical">Chemical propulsion</option><option value="electric">Electric propulsion</option><option value="hybrid" selected>Hybrid propulsion</option></select></label>
+              </div>
+              <div class="ch-checks" id="ch-instruments">
+                <label><input type="checkbox" value="camera" checked> Multispectral camera <small>science + data + power</small></label>
+                <label><input type="checkbox" value="spectrometer" checked> Imaging spectrometer <small>high science + data</small></label>
+                <label><input type="checkbox" value="radar"> Synthetic aperture radar <small>high power + data</small></label>
+                <label><input type="checkbox" value="magnetometer"> Magnetometer <small>low power + data</small></label>
+                <label><input type="checkbox" value="drill"> Sampling drill / payload <small>mass + power + science</small></label>
+              </div>
+              <p class="ch-help">Instrument choices change payload mass, power demand, data generation, cost and scientific return.</p>
+            </article>
+            <article class="panel ch-card">
+              <div class="eyebrow">04 · LIVE RESOURCE BUDGET</div><h3>Engineering trade-offs</h3>
+              <div id="ch-resource-metrics" class="ch-metrics"></div>
+              <div id="ch-compatibility" class="ch-feedback" role="status" aria-live="polite"></div>
+            </article>
+            <article class="panel ch-card">
+              <div class="eyebrow">05 · COMMUNICATIONS & OPERATIONS</div><h3>Data return plan</h3>
+              <label>Communications system<select id="ch-comms"><option value="basic">Basic low-gain antenna</option><option value="high" selected>High-gain dish</option><option value="relay">Relay network + high-gain</option></select></label>
+              <label>Ground contact allocation <input id="ch-contact" type="range" min="1" max="12" value="6"><output id="ch-contact-value">6 hours/day</output></label>
+              <div id="ch-data-status" class="ch-feedback"></div>
+              <p class="ch-help">Generated science data is compared with daily downlink capacity. Contact time and antenna selection affect the amount of data returned.</p>
+            </article>
+            <article class="panel ch-card ch-wide">
+              <div class="eyebrow">06 · TEAM REVIEW & MISSION EXECUTION</div><h3>Collaborative design review</h3>
+              <div id="ch-signoffs" class="ch-signoffs"></div>
+              <div class="ch-actions"><button class="save-button" id="ch-import-designer">IMPORT CURRENT DESIGNER CONFIGURATION</button><button class="save-button" id="ch-open-designer">OPEN SPACECRAFT DESIGNER</button><button class="save-button" id="ch-open-flight">OPEN FLIGHT OPERATIONS</button><button class="primary-button" id="ch-run">RUN MISSION SIMULATION</button><button class="save-button" id="ch-save">SAVE DESIGN</button><button class="save-button" id="ch-export">EXPORT / SHARE DESIGN</button><label class="save-button ch-import">IMPORT DESIGN<input id="ch-import-file" type="file" accept="application/json"></label></div>
+              <div id="ch-result" class="ch-result" aria-live="polite">Complete your design review, then simulate the mission.</div>
+            </article>
+            <article class="panel ch-card">
+              <div class="eyebrow">07 · MISSION EVENTS</div><h3>Unexpected constraints</h3>
+              <p class="ch-help">Operational events introduce new constraints. Choose a response and observe its resource and mission consequences.</p>
+              <button class="save-button" id="ch-event">GENERATE MISSION EVENT</button>
+              <div id="ch-event-panel" class="ch-event-panel">No active event.</div>
+            </article>
+            <article class="panel ch-card">
+              <div class="eyebrow">08 · LEARN AS YOU DESIGN</div><h3>Engineering field guide</h3>
+              <label>Learning topic<select id="ch-lesson"><option value="mass">Mass & launch capacity</option><option value="power">Power balance</option><option value="data">Data & communications</option><option value="orbit">Orbit selection</option><option value="lifetime">Mission lifetime & reliability</option><option value="trade">Engineering trade-offs</option></select></label>
+              <div id="ch-lesson-content" class="ch-lesson"></div>
+            </article>
+            <article class="panel ch-card ch-wide">
+              <div class="eyebrow">09 · DESIGN LIBRARY & PERFORMANCE</div><h3>Save, compare and rank mission designs</h3>
+              <div class="ch-actions"><button class="save-button" id="ch-compare">COMPARE SAVED DESIGNS</button><button class="save-button" id="ch-leaderboard">VIEW LOCAL LEADERBOARD</button></div>
+              <div id="ch-library" class="ch-library"></div><div id="ch-leaderboard-panel" class="ch-library"></div>
+              <p class="ch-help">Design sharing uses portable JSON files. The leaderboard is stored locally in this browser; it is not a global online ranking service.</p>
+            </article>
+          </div>
+          <p class="ex-disclaimer">NOVALUX challenge mode is an educational game. Values are simplified estimates for learning and comparison, not certified mission-design predictions. Team mode supports up to four people collaborating on one shared device. Online multiplayer and global leaderboards require a backend service and are not included.</p>
+        </section>
+
+        <!-- =================================================
+             MISSION REPORTS
+        ================================================== -->
+
+        <section
+            class="view"
+            id="reports-view"
+            aria-label="Mission reports"
+        >
+
+            <div class="section-heading">
+
+                <div>
+                    <div class="eyebrow">MISSION ANALYTICS</div>
+
+                    <h2>Mission Reports</h2>
+
+                    <p class="section-description">
+                        Review the results of your previous mission evaluations.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div
+                class="panel reports-container"
+                id="reports-container"
+                aria-live="polite"
+            >
+
+                <div class="empty-state">
+
+                    <span aria-hidden="true">▤</span>
+
+                    <h3>No reports available</h3>
+
+                    <p>
+                        Your mission evaluations will appear here.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer>
+
+            <span>NOVALUX SPACE SYSTEMS</span>
+
+            <span>
+                EDUCATIONAL SIMULATION PROJECT · ALPHA 0.2
+            </span>
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+<!-- =====================================================
+     MISSION EVALUATION MODAL
+====================================================== -->
+
+<div
+    class="modal-backdrop"
+    id="evaluation-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="evaluation-modal-title"
+    aria-describedby="modal-description"
+>
+
+    <div class="evaluation-modal">
+
+        <button
+            type="button"
+            class="modal-close"
+            id="modal-close"
+            aria-label="Close evaluation"
+        >
+            ×
+        </button>
+
+
+        <div class="eyebrow">
+            NOVALUX / ENGINEERING ANALYSIS
+        </div>
+
+
+        <div class="modal-icon" aria-hidden="true">
+            ✓
+        </div>
+
+
+        <h2 id="evaluation-modal-title">
+            Mission Evaluation Complete
+        </h2>
+
+
+        <p
+            class="modal-description"
+            id="modal-description"
+        >
+            Your spacecraft design has been evaluated.
+        </p>
+
+
+        <div class="modal-score">
+
+            <strong id="modal-score">--</strong>
+
+            <span>/ 100</span>
+
+        </div>
+
+
+        <div
+            class="modal-classification"
+            id="modal-classification"
+        >
+            DESIGN STATUS
+        </div>
+
+
+        <div class="modal-metrics">
+
+            <div>
+                <small>MASS</small>
+                <strong id="modal-mass">--</strong>
+            </div>
+
+            <div>
+                <small>POWER</small>
+                <strong id="modal-power">--</strong>
+            </div>
+
+            <div>
+                <small>BUDGET</small>
+                <strong id="modal-budget">--</strong>
+            </div>
+
+        </div>
+
+
+        <div
+            class="modal-findings"
+            id="modal-findings"
+        ></div>
+
+
+        <div class="modal-actions">
+
+            <button
+                type="button"
+                class="save-button"
+                id="modal-edit-button"
+            >
+                MODIFY DESIGN
+            </button>
+
+            <button
+                type="button"
+                class="primary-button"
+                id="modal-proceed-button"
+            >
+                PROCEED TO MISSION →
+            </button>
+
+        </div>
+
+
+        <p class="modal-disclaimer">
+            Educational game evaluation using simplified model values.
+            Not a real spacecraft certification.
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- GLOBAL NOTIFICATIONS -->
+
+<div
+    class="toast"
+    id="toast"
+    role="status"
+    aria-live="polite"
+></div>
+
+
+<!-- =====================================================
+     APPLICATION SCRIPTS
+====================================================== -->
+
+<script>
+    // ES modules are blocked on file:// - warn instead of failing silently.
+    if (location.protocol === "file:") {
+        document.addEventListener("DOMContentLoaded", function () {
+            var bar = document.createElement("div");
+            bar.setAttribute("role", "alert");
+            bar.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:9999;padding:10px 16px;background:#7a2e0e;color:#fff;font:14px sans-serif;text-align:center";
+            bar.textContent = "The orbital simulation needs a local web server. Run `python3 -m http.server` in this folder and open http://localhost:8000.";
+            document.body.appendChild(bar);
+        });
+    }
+</script>
+
+<script>
+    (function () {
+        var gate = document.getElementById("prototype-alert");
+        var enter = document.getElementById("prototype-enter-button");
+        if (!gate || !enter) return;
+        enter.addEventListener("click", function () {
+            gate.classList.add("is-dismissed");
+            document.body.classList.remove("prototype-gate-open");
+            window.setTimeout(function () { gate.remove(); }, 220);
+        });
+        enter.focus();
+    })();
+</script>
+
+<!-- Original NOVALUX Alpha 0.2 application -->
+<script src="app.js"></script>
+
+<!-- Three.js orbital simulation module -->
+<script
+    type="module"
+    src="src/simulation-bootstrap.js"
+></script>
+<script type="module" src="src/launch-bootstrap.js"></script>
+<script type="module" src="src/interplanetary-missions.js"></script>
+<script type="module" src="src/phase5-exploration.js"></script>
+<script type="module" src="src/phase6-3d.js"></script>
+<script type="module" src="src/expedition-command.js"></script>
+<script type="module" src="src/ship/spacecraft-engineering.js"></script>
+<script type="module" src="src/mission-design-challenge.js"></script>
+
+<!-- NOVALUX sound controls -->
+<div class="novalux-audio" id="novalux-audio" aria-label="Sound settings">
+  <button class="novalux-audio-toggle" id="audio-toggle" type="button" aria-pressed="true" aria-label="Mute sound effects">♫ SOUND ON</button>
+  <label class="novalux-audio-volume" for="audio-volume"><span>VOLUME</span><input id="audio-volume" type="range" min="0" max="100" value="45" step="1"><output id="audio-volume-value" for="audio-volume">45%</output></label>
+  <label class="novalux-audio-ambience" for="audio-ambience"><input id="audio-ambience" type="checkbox"><span>SPACE AMBIENCE</span></label>
+  <span class="novalux-audio-hint" id="audio-hint">Click anywhere to enable audio</span>
+</div>
+<script src="src/audio-system.js"></script>
+</body>
+</html>

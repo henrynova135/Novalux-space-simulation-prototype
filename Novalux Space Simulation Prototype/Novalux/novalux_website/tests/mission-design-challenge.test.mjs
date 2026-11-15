@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+const js=readFileSync(new URL('../src/mission-design-challenge.js',import.meta.url),'utf8');
+const app=readFileSync(new URL('../app.js',import.meta.url),'utf8');
+test('Mission Design Challenge is reachable and loads its module',()=>{assert.match(html,/data-view="challenge"/);assert.match(html,/id="challenge-view"/);assert.match(html,/src\/mission-design-challenge\.js/);assert.match(app,/challenge: "Mission Design Challenge"/);});
+test('Mission architecture exposes objectives, launch, orbit, instruments and resource budgets',()=>{for(const id of ['ch-objective','ch-launch','ch-orbit','ch-instruments','ch-resource-metrics','ch-lifetime','ch-comms','ch-contact'])assert.match(html,new RegExp(`id="${id}"`));for(const term of ['wetMass','powerNeed','dailyDownlink','dailyData','reliability','budget'])assert.ok(js.includes(term));});
+test('Difficulty, unexpected events and educational guide are implemented',()=>{assert.match(html,/id="ch-difficulty"/);assert.match(html,/id="ch-event"/);assert.match(html,/id="ch-lesson"/);assert.match(js,/const difficulty/);assert.match(js,/function generateEvent/);assert.match(js,/const lessons/);});
+test('Four-person cooperative workflow requires design sign-offs',()=>{assert.match(html,/id="ch-team-size"/);assert.match(js,/Mission Director/);assert.match(js,/function renderSignoffs/);assert.match(js,/Design review incomplete/);});
+test('Mission designs can be saved, imported, exported, compared and ranked locally',()=>{for(const id of ['ch-save','ch-export','ch-import-file','ch-compare','ch-leaderboard'])assert.match(html,new RegExp(`id="${id}"`));assert.match(js,/NOVALUX-MISSION-DESIGN/);assert.match(js,/localStorage/);assert.match(js,/leaderboard/);});
+test('Challenge workspace can import the existing spacecraft designer configuration',()=>{assert.match(html,/id="ch-import-designer"/);assert.match(js,/window\.NOVALUX\?\.getDesign\?\.\(\)/);});
