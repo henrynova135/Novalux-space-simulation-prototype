@@ -76,7 +76,7 @@ NOVALUX is deployed using **Vercel**.
 
 **Live Demo:** https://novalux-space-simulation-prototype.vercel.app/
 
-**GitHub Repository:** [Add your public GitHub repository URL here]
+**GitHub Repository:** https://github.com/henrynova135/Novalux-space-simulation-prototype
 
 ## 🎯 Educational Purpose
 
