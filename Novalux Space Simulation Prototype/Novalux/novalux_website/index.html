@@ -14,29 +14,7 @@
     <meta name="application-name" content="NOVALUX Mission Control">
 
     <title>NOVALUX | Mission Control</title>
-    <meta name="description" content="Design spacecraft, run orbital physics simulations, manage crew systems, and command Earth, Moon, and Mars expeditions in NOVALUX — an interactive browser-based space mission control simulator." />
-    <meta name="keywords" content="NOVALUX, space mission control simulation, spacecraft designer, orbital mechanics simulator, Three.js space game" />
-<link rel="canonical" href="https://novalux-space-simulation-prototype.vercel.app/" />
 
-<!-- Open Graph / Site Name -->
-<meta property="og:site_name" content="NOVALUX" />
-<meta property="og:title" content="NOVALUX | Space Mission Control Simulation" />
-<meta property="og:description" content="Design spacecraft, run telemetry diagnostics, and simulate space missions." />
-<meta property="og:url" content="https://novalux-space-simulation-prototype.vercel.app/" />
-<meta property="og:type" content="website" />
-
-<!-- Favicon (Must be at least 48x48px square) -->
-<link rel="icon" href="../../../favicon.png" sizes="48x48" type="image/png" />
-
-<!-- Google Site Name Structured Data -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "NOVALUX space mission control simulation demo",
-  "url": "https://novalux-space-simulation-prototype.vercel.app/"
-}
-</script>
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 
@@ -94,6 +72,11 @@
                 Mission Overview
             </button>
 
+            <button type="button" class="nav-item" data-view="mission-planner">
+                <span aria-hidden="true">⌖</span>
+                Mission Planner
+            </button>
+
             <button
                 type="button"
                 class="nav-item"
@@ -121,7 +104,7 @@
                 Mission Gameplay
             </button>
 
-            <button type="button" class="nav-item" data-view="phase5">
+            <button type="button" class="nav-item" data-view="exploration">
                 <span aria-hidden="true">✧</span>
                 Advanced Exploration
             </button>
@@ -141,6 +124,12 @@
                 Spacecraft Engineering
             </button>
 
+            <button type="button" class="nav-item" data-view="mission-control"><span aria-hidden="true">◉</span>Mission Control</button>
+            <button type="button" class="nav-item" data-view="science-results"><span aria-hidden="true">✧</span>Science Results</button>
+            <button type="button" class="nav-item" data-view="team-collab"><span aria-hidden="true">♧</span>Team Workspace</button>
+            <button type="button" class="nav-item" data-view="scenarios"><span aria-hidden="true">✦</span>Mission Scenarios</button>
+            <button type="button" class="nav-item" data-view="release"><span aria-hidden="true">✓</span>Readiness & Release</button>
+
             <button
                 type="button"
                 class="nav-item"
@@ -149,6 +138,10 @@
                 <span aria-hidden="true">▤</span>
                 Mission Reports
             </button>
+
+            <div class="sidebar-label">PLAYER SUPPORT</div>
+            <button type="button" class="nav-item" data-view="guide"><span aria-hidden="true">?</span>Game Guide</button>
+            <button type="button" class="nav-item" data-view="settings"><span aria-hidden="true">⚙</span>Settings</button>
 
         </nav>
 
@@ -196,7 +189,7 @@
                 SYSTEM ONLINE
             </div>
 
-            <small>NOVALUX ALPHA 0.2</small>
+            <small>NOVALUX ALPHA 0.3</small>
 
         </div>
 
@@ -249,6 +242,129 @@
         <!-- =================================================
              OVERVIEW
         ================================================== -->
+
+        <section class="view" id="mission-planner-view" aria-label="Integrated mission planner">
+            <div class="section-heading">
+                <div>
+                    <div class="eyebrow">MISSION SYSTEMS ENGINEERING</div>
+                    <h2>Mission Architecture & Science Planning</h2>
+                    <p class="section-description">Define the scientific need, establish mission requirements, review engineering trades and select a compatible scientific payload.</p>
+                </div>
+                <span class="status-tag" id="mp-stage-tag">CML 1 · CONCEPT</span>
+            </div>
+
+            <div class="mp-layout">
+                <article class="panel mp-main">
+                    <div class="panel-heading"><div><div class="eyebrow">01 / MISSION CONCEPT</div><h3>Define the mission</h3></div><span class="mission-number" id="mp-mission-code">NLX-EARTH-001</span></div>
+                    <div class="mp-fields">
+                        <label>Mission name<input id="mp-name" maxlength="64" value="Earth Observation Pathfinder"></label>
+                        <label>Mission destination<select id="mp-mission"><option value="earth">Earth</option><option value="moon">Moon</option><option value="mars">Mars</option></select></label>
+                        <label class="mp-wide">Scientific objective<select id="mp-objective"></select></label>
+                        <label>Mission lifetime (months)<input id="mp-duration" type="number" min="1" max="60" value="12"></label>
+                        <label>Concept maturity<select id="mp-cml"><option value="1">CML 1 · Initial concept</option><option value="2">CML 2 · Feasibility</option><option value="3">CML 3 · Trade studies</option><option value="4">CML 4 · Point design</option></select></label>
+                    </div>
+                    <div class="mp-brief" id="mp-brief" aria-live="polite"></div>
+                    <div class="mp-actions"><button class="primary-button" id="mp-apply" type="button">APPLY TO SPACECRAFT DESIGNER</button><button class="save-button" id="mp-save" type="button">SAVE MISSION CONCEPT</button><button class="save-button" id="mp-export" type="button">EXPORT MISSION JSON</button></div>
+                </article>
+
+                <article class="panel mp-side">
+                    <div class="eyebrow">02 / MISSION REQUIREMENTS</div><h3>Success criteria</h3>
+                    <p class="mp-help">Set the constraints that the spacecraft design should satisfy. These are game requirements, not certified engineering limits.</p>
+                    <label>Maximum spacecraft dry mass (kg)<input id="mp-max-mass" type="number" min="10" max="5000" step="10" value="250"></label>
+                    <label>Maximum mission budget (MCr)<input id="mp-max-budget" type="number" min="10" max="1000" step="5" value="150"></label>
+                    <label>Minimum power reserve (%)<input id="mp-power-reserve" type="number" min="0" max="80" step="5" value="10"></label>
+                    <label>Science priority<select id="mp-priority"><option value="balanced">Balanced</option><option value="maximum">Maximize scientific return</option><option value="efficient">Resource efficiency</option></select></label>
+                    <div id="mp-requirement-status" class="mp-feedback" role="status" aria-live="polite"></div>
+                </article>
+
+                <article class="panel mp-wide">
+                    <div class="panel-heading"><div><div class="eyebrow">03 / SYSTEMS ENGINEERING</div><h3>Live spacecraft architecture review</h3></div><button class="save-button" id="mp-refresh" type="button">REFRESH DESIGN DATA</button></div>
+                    <div class="mp-metrics" id="mp-metrics"></div>
+                    <div id="mp-engineering-checks" class="mp-checks" role="status" aria-live="polite"></div>
+                    <p class="mp-help">Values are read from the existing Spacecraft Designer. Selecting or changing a component updates this review automatically.</p>
+                </article>
+
+                <article class="panel mp-wide">
+                    <div class="panel-heading"><div><div class="eyebrow">04 / SCIENTIFIC PAYLOAD</div><h3>Instrument suitability laboratory</h3></div><span class="status-tag" id="mp-instrument-status">AWAITING DESIGN</span></div>
+                    <p class="mp-help">Instrument suitability is matched to the selected scientific objective. A recommendation indicates relevance, not guaranteed scientific performance.</p>
+                    <div class="mp-instrument-grid" id="mp-instrument-grid"></div>
+                    <div class="mp-instrument-current" id="mp-instrument-current"></div>
+                    <button class="primary-button" id="mp-open-instruments" type="button">OPEN INSTRUMENT CATALOGUE</button>
+                </article>
+
+                <article class="panel mp-wide">
+                    <div class="panel-heading"><div><div class="eyebrow">05 / DESIGN MATURITY</div><h3>Mission development checklist</h3></div><strong id="mp-completion">0 / 4</strong></div>
+                    <div class="mp-maturity" id="mp-maturity"></div>
+                    <div class="mp-actions"><button class="save-button" id="mp-open-designer" type="button">OPEN SPACECRAFT DESIGNER</button><button class="save-button" id="mp-open-challenge" type="button">OPEN MISSION DESIGN CHALLENGE</button></div>
+                </article>
+            </div>
+            <div class="ops-phase-heading"><div><div class="eyebrow">LAUNCH & ORBITAL DESIGN</div><h3>Launch Vehicle & Orbit Planner</h3><p>Choose a launch vehicle, verify modeled payload compatibility and calculate a circular parking orbit around the selected destination body.</p></div><span class="status-tag">ORBIT DESIGN</span></div>
+            <div class="ops-grid">
+                <article class="panel ops-panel">
+                    <div class="panel-heading"><div><div class="eyebrow">01 / LAUNCH SEGMENT</div><h3>Launch vehicle selection</h3></div></div>
+                    <label>Launch vehicle<select id="ops-launcher"></select></label>
+                    <div class="ops-metrics" id="ops-launch-metrics"></div>
+                    <div class="ops-verdict" id="ops-launch-verdict" role="status"></div>
+                    <button class="primary-button" id="ops-apply-launcher" type="button">APPLY TO SPACECRAFT DESIGNER</button>
+                </article>
+                <article class="panel ops-panel">
+                    <div class="panel-heading"><div><div class="eyebrow">02 / ORBITAL ARCHITECTURE</div><h3>Parking orbit configuration</h3></div></div>
+                    <label for="ops-altitude">Orbit altitude <output id="ops-altitude-value">400 km</output></label><input id="ops-altitude" type="range" min="160000" max="2000000" step="10000" value="400000">
+                    <label for="ops-inclination">Inclination <output id="ops-inclination-value">51.6°</output></label><input id="ops-inclination" type="range" min="0" max="180" step="0.1" value="51.6">
+                    <div class="ops-orbit-class" id="ops-orbit-class">LEO</div>
+                    <div class="ops-metrics" id="ops-orbit-metrics"></div>
+                    <p class="ops-note" id="ops-orbit-note"></p>
+                </article>
+            </div>
+
+            <div class="ops-phase-heading"><div><div class="eyebrow">ENGINEERING TRADE STUDIES</div><h3>Mission Resource & Trade-off Explorer</h3><p>Compare alternative spacecraft components and see how each choice changes mass, power, cost and launch margin before applying it.</p></div><span class="status-tag">LIVE TRADE STUDY</span></div>
+            <div class="ops-grid">
+                <article class="panel ops-panel">
+                    <div class="panel-heading"><div><div class="eyebrow">CURRENT CONFIGURATION</div><h3>Active spacecraft</h3></div></div>
+                    <div id="trade-current" class="ops-trade-summary"></div>
+                </article>
+                <article class="panel ops-panel">
+                    <div class="panel-heading"><div><div class="eyebrow">WHAT-IF CONFIGURATION</div><h3>Preview alternatives</h3></div></div>
+                    <div class="ops-trade-selects">
+                        <label>Propulsion<select id="trade-propulsion"></select></label>
+                        <label>Power system<select id="trade-power"></select></label>
+                        <label>Scientific instrument<select id="trade-instrument"></select></label>
+                        <label>Communication system<select id="trade-communication"></select></label>
+                        <label>Launch vehicle<select id="trade-launcher"></select></label>
+                    </div>
+                    <div id="trade-preview" class="ops-trade-summary"></div>
+                    <div id="trade-deltas" class="ops-deltas"></div>
+                    <div id="trade-verdict" class="ops-verdict" role="status"></div>
+                    <button class="primary-button" id="trade-apply" type="button">APPLY PREVIEW TO SPACECRAFT</button>
+                </article>
+            </div>
+
+            <div class="ops-phase-heading"><div><div class="eyebrow">GROUND SEGMENT & COMMUNICATIONS</div><h3>Ground Station Network & Data Downlink</h3><p>Estimate a spacecraft-to-ground-station radio link, daily contact capacity and whether the selected network can clear the mission's modeled data volume.</p></div><span class="status-tag">GROUND NETWORK</span></div>
+            <div class="ops-grid">
+                <article class="panel ops-panel">
+                    <div class="panel-heading"><div><div class="eyebrow">01 / NETWORK CONFIGURATION</div><h3>Ground station & spacecraft link</h3></div></div>
+                    <label>Ground station class<select id="ground-station"><option value="regional">Regional Ground Station · 12 m class</option><option value="deep34">Deep-Space Station · 34 m class</option><option value="deep70">Deep-Space Station · 70 m class</option></select></label>
+                    <p class="ops-note" id="ground-station-description"></p>
+                    <div class="ops-input-grid">
+                        <label>Range (km)<input id="ground-distance" type="number" min="1" value="2000"></label>
+                        <label>Frequency (GHz)<input id="ground-frequency" type="number" min="0.1" max="100" step="0.1" value="8.4"></label>
+                        <label>Spacecraft TX power (W)<input id="ground-power" type="number" min="0.1" step="1" value="100"></label>
+                        <label>Spacecraft antenna gain (dBi)<input id="ground-tx-gain" type="number" min="0" step="1" value="35"></label>
+                        <label>Data rate (kbps)<input id="ground-rate" type="number" min="0.1" step="1" value="10"></label>
+                        <label>Contact time per day (min)<input id="ground-contact" type="number" min="1" max="1440" value="120"></label>
+                        <label>Science data generated (MB/day)<input id="ground-data" type="number" min="0.1" step="1" value="80"></label>
+                    </div>
+                </article>
+                <article class="panel ops-panel">
+                    <div class="panel-heading"><div><div class="eyebrow">02 / LINK & DATA ANALYSIS</div><h3>Downlink performance estimate</h3></div></div>
+                    <div class="ops-metrics" id="ground-link-metrics"></div>
+                    <div class="ops-verdict" id="ground-verdict" role="status"></div>
+                    <p class="ops-note">The model uses a simplified Friis free-space path-loss estimate and a fixed illustrative station noise figure. It does not predict real antenna pointing, terrain blockage, weather, orbital visibility or scheduled DSN contacts.</p>
+                </article>
+            </div>
+            <div class="ops-footer panel"><div><b id="ops-status" role="status" aria-live="polite">Mission operations planner ready.</b><small>Mission operations settings are saved locally in this browser.</small></div><div><button class="save-button" id="ops-refresh" type="button">REFRESH ALL SYSTEMS</button><button class="primary-button" id="ops-export" type="button">EXPORT OPERATIONS PLAN</button></div></div>
+            <p class="mp-disclaimer">Scientific and engineering values are educational approximations. Launch vehicle payload capacities and costs are NOVALUX game parameters, not real launch service quotations. Orbit calculations use a two-body circular-orbit model. Ground-station results are static link-budget estimates, not actual pass schedules or certified communications analysis.</p>
+        </section>
 
         <section
             class="view active"
@@ -955,6 +1071,7 @@
 
 
                     <div class="game-canvas-wrap">
+                        <div class="rotate-phone-hint" role="status"><b>↻ Rotate your phone</b><span>Landscape gives the mission scene more room. The touch pad appears when gameplay starts.</span></div>
 
                         <canvas
                             id="mission-canvas"
@@ -965,6 +1082,14 @@
                             Your browser does not support the canvas element.
                         </canvas>
 
+                        <div class="game-touch-controls" id="game-touch-controls" aria-label="Touch movement controls">
+                            <div class="game-touch-pad">
+                                <button type="button" data-game-touch="up" aria-label="Move up">▲</button>
+                                <button type="button" data-game-touch="left" aria-label="Move left">◀</button>
+                                <button type="button" data-game-touch="down" aria-label="Move down">▼</button>
+                                <button type="button" data-game-touch="right" aria-label="Move right">▶</button>
+                            </div>
+                        </div>
 
                         <div
                             class="game-overlay"
@@ -1009,8 +1134,9 @@
                             <small>CONTROLS</small>
 
                             <strong id="game-controls-description">
-                                Use ← → or A / D to move
+                                Use A / D or arrow keys to move
                             </strong>
+                            <div class="game-keycaps" aria-label="Keyboard controls"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>or</span><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd></div>
                         </div>
 
 
@@ -1204,18 +1330,18 @@
         </section>
 
 
-        <!-- PHASE 5 — ADVANCED SPACE EXPLORATION -->
-        <section class="view" id="phase5-view" aria-label="Phase 5 advanced space exploration">
+        <!-- ADVANCED SPACE EXPLORATION -->
+        <section class="view" id="exploration-view" aria-label="Advanced space exploration">
             <div class="section-heading">
-                <div><div class="eyebrow">NOVALUX / PHASE 5</div><h2>Advanced Space Exploration</h2>
+                <div><div class="eyebrow">NOVALUX / ADVANCED EXPLORATION</div><h2>Advanced Space Exploration</h2>
                 <p class="section-description">Operate reusable vehicles, rendezvous with an orbital station, explore a planetary surface, and manage a crew. Each activity has live controls and simplified educational physics.</p></div>
                 <span class="status-tag" id="p5-global-status">READY</span>
             </div>
             <div class="p6-integration panel" aria-label="Integrated spacecraft and mission progress">
                 <div class="p6-integration-main">
-                    <div class="eyebrow">PHASE 6 FOUNDATION · LIVE DESIGN LINK</div>
+                    <div class="eyebrow">LIVE DESIGN LINK</div>
                     <h3 id="p6-craft-name">Loading spacecraft design…</h3>
-                    <p id="p6-craft-summary">Phase 5 reads the active spacecraft configuration from the NOVALUX designer.</p>
+                    <p id="p6-craft-summary">This workspace reads the active spacecraft configuration from the NOVALUX designer.</p>
                 </div>
                 <div class="p6-progress" aria-live="polite">
                     <span>MISSION ACTIVITIES COMPLETED</span>
@@ -1224,7 +1350,7 @@
                 </div>
                 <button class="save-button" type="button" id="p6-refresh-design">REFRESH DESIGN</button>
             </div>
-            <div class="p5-tabs" role="tablist" aria-label="Phase 5 activities">
+            <div class="p5-tabs" role="tablist" aria-label="Exploration activities">
                 <button class="p5-tab active" type="button" data-p5-tab="reentry">01 · Re-entry</button>
                 <button class="p5-tab" type="button" data-p5-tab="docking">02 · Docking</button>
                 <button class="p5-tab" type="button" data-p5-tab="rover">03 · Rover</button>
@@ -1235,14 +1361,14 @@
                     <h3 id="p5-title">Reusable spacecraft re-entry</h3><p id="p5-description">Guide a returning vehicle through the upper atmosphere, manage heating, and deploy its parachute before touchdown.</p></div>
                     <div class="p5-actions"><button class="save-button" type="button" id="p5-reset">RESET</button><button class="primary-button" type="button" id="p5-start">START SIMULATION</button></div>
                 </div>
-                <div class="p5-stage"><canvas id="p5-canvas" width="1000" height="520" aria-label="Interactive Phase 5 simulation"></canvas><canvas id="p5-3d-canvas" width="1000" height="520" aria-label="Interactive three-dimensional rover and orbital docking simulation"></canvas>
+                <div class="p5-stage"><div class="rotate-phone-hint" role="status"><b>↻ Rotate your phone</b><span>Play in landscape for a wider rover and docking view. Touch controls stay below the scene.</span></div><canvas id="p5-canvas" width="1000" height="520" aria-label="Interactive exploration simulation"></canvas><canvas id="p5-3d-canvas" width="1000" height="520" aria-label="Interactive three-dimensional rover and orbital docking simulation"></canvas>
                     <div class="p5-stage-overlay" id="p5-overlay"><div class="eyebrow">MISSION READY</div><strong id="p5-overlay-title">Begin atmospheric entry</strong><p id="p5-overlay-copy">Use the controls to steer and manage the vehicle. The simulation begins paused.</p></div>
                 </div>
                 <div class="p5-time-control" aria-label="Simulation time controls">
                     <div class="p5-time-heading"><div><div class="eyebrow">MISSION TIME CONTROL</div><label for="p5-time-scale">SIMULATION SPEED</label></div><output id="p5-time-value" for="p5-time-scale">1.0× REAL TIME</output></div>
                     <input id="p5-time-scale" type="range" min="0.5" max="20" step="0.5" value="1" aria-describedby="p5-time-help">
                     <div class="p5-time-scale-labels"><span>0.5× SLOW</span><span>1× NORMAL</span><span>20× FAST</span></div>
-                    <p id="p5-time-help">Adjusts mission time for all four Phase 5 activities. Physics uses smaller internal steps at higher speeds to keep the simulation stable. You can change speed while running.</p>
+                    <p id="p5-time-help">Adjusts mission time for all four exploration activities. Physics uses smaller internal steps at higher speeds to keep the simulation stable. You can change speed while running.</p>
                 </div>
                 <div class="p5-telemetry" aria-live="polite">
                     <div><span id="p5-label-a">ALTITUDE</span><strong id="p5-metric-a">120.0 km</strong></div>
@@ -1251,7 +1377,7 @@
                     <div><span>MISSION STATUS</span><strong id="p5-metric-d">STANDBY</strong></div>
                 </div>
                 <div class="p5-control-area"><div><div class="eyebrow">FLIGHT CONTROLS</div><p id="p5-controls-help">Use A / D or the buttons to bank. Deploy the parachute below 12 km.</p></div>
-                    <div class="p5-control-buttons" id="p5-controls"><button type="button" data-p5-control="left">◀ BANK</button><button type="button" data-p5-control="right">BANK ▶</button><button type="button" data-p5-action="parachute">DEPLOY PARACHUTE</button></div>
+                    <div class="p5-device-keys"><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Move / thrust</span><span><kbd>E</kbd> Scan checkpoint</span><span><kbd>C</kbd> Reset rover camera</span></div><div class="p5-control-buttons" id="p5-controls"><button type="button" data-p5-control="left">◀ BANK</button><button type="button" data-p5-control="right">BANK ▶</button><button type="button" data-p5-action="parachute">DEPLOY PARACHUTE</button></div>
                 </div>
                 <div class="p5-event-log" id="p5-log" aria-live="polite">SYSTEM: Awaiting simulation start.</div>
             </div>
@@ -1259,10 +1385,10 @@
         </section>
 
 
-        <!-- PHASE 7 — UNIFIED EXPEDITION CAMPAIGN -->
+        <!-- UNIFIED EXPEDITION CAMPAIGN -->
         <section class="view" id="engineering-view" aria-label="Advanced 3D spacecraft engineering">
           <div id="engineering-bay">
-            <div class="section-heading"><div><div class="eyebrow">PHASE 8 / FINAL ENGINEERING SYSTEM</div><h2>Advanced Spacecraft Engineering</h2><p class="section-description">Assemble a modular spacecraft, deploy hardware, calculate mass properties, operate propulsion, and test component failures.</p></div><span class="status-tag">ENGINEERING MODE</span></div>
+            <div class="section-heading"><div><div class="eyebrow">ADVANCED ENGINEERING SYSTEM</div><h2>Advanced Spacecraft Engineering</h2><p class="section-description">Assemble a modular spacecraft, deploy hardware, calculate mass properties, operate propulsion, and test component failures.</p></div><span class="status-tag">ENGINEERING MODE</span></div>
             <div class="eng-layout">
                 <div class="panel eng-main"><div class="panel-heading"><div><div class="eyebrow">01 / LIVE 3D ASSEMBLY</div><h3>Spacecraft Assembly Bay</h3></div><div class="eng-camera-actions"><button class="secondary-button" id="eng-fit" type="button">FIT ENTIRE SPACECRAFT</button><button class="secondary-button" id="eng-sync" type="button">IMPORT DESIGNER CONFIGURATION</button></div></div><div id="eng-viewport" class="eng-viewport" aria-label="Interactive 3D spacecraft preview"></div><p class="eng-hint">Drag to rotate · Scroll to zoom · Components attach at defined mounting points.</p><div class="eng-component-grid">
                     <button type="button" data-part="bus"><b>Primary structure</b><small>Core mount · 120 kg</small></button>
@@ -1286,7 +1412,7 @@
         </section>
 
         <section class="view" id="expedition-view" aria-label="NOVALUX unified expedition campaign">
-          <div class="section-heading"><div><div class="eyebrow">NOVALUX / PHASE 7 · UNIFIED CAMPAIGN</div><h2>Expedition Command</h2><p class="section-description">Build an expedition spacecraft, plan Earth–Moon–Mars missions, expand an orbital station, manage crew contingencies and conduct science. Campaign progress is saved in this browser.</p></div><span class="status-tag">CAMPAIGN</span></div>
+          <div class="section-heading"><div><div class="eyebrow">NOVALUX / UNIFIED CAMPAIGN</div><h2>Expedition Command</h2><p class="section-description">Build an expedition spacecraft, plan Earth–Moon–Mars missions, expand an orbital station, manage crew contingencies and conduct science. Campaign progress is saved in this browser.</p></div><span class="status-tag">CAMPAIGN</span></div>
           <div class="ex-hero panel"><div><div class="eyebrow">PERSISTENT MISSION PROFILE</div><h3 id="ex-rank">CADET</h3><p id="ex-design-link">Checking spacecraft designer connection…</p><div class="ex-progress"><i id="ex-progress"></i></div><small id="ex-progress-label">0 / 7 campaign milestones</small></div><div id="ex-status" class="ex-status" role="status" aria-live="polite">Campaign initialized.</div><div class="ex-wallet"><div><small>EXPERIENCE</small><b id="ex-xp">0 XP</b></div><div><small>MISSION CREDITS</small><b id="ex-credits">1,200 CR</b></div></div></div>
           <div class="ex-grid">
             <article class="panel ex-card ex-wide"><div class="eyebrow">01 · MODULAR SPACECRAFT CONSTRUCTION</div><h3>Expedition vehicle assembly</h3><p>Configure a modular spacecraft architecture. Mass, electrical power and component costs update as you add or remove modules.</p><div class="ex-build-layout"><div id="ex-parts" class="ex-parts"></div><div class="ex-stats"><div><small>ASSEMBLED MASS</small><b id="ex-ship-mass">—</b></div><div><small>AVAILABLE POWER</small><b id="ex-ship-power">—</b></div><div><small>COMPONENT VALUE</small><b id="ex-ship-cost">—</b></div></div></div></article>
@@ -1296,7 +1422,7 @@
             <article class="panel ex-card ex-wide"><div class="eyebrow">05 · SCIENTIFIC EXPERIMENTS & DISCOVERIES</div><h3>Research programme</h3><p>Run experiments across lunar, Martian and orbital environments. Each completed experiment records a discovery and awards campaign rewards.</p><div id="ex-experiments" class="ex-experiments"></div></article>
             <article class="panel ex-card ex-wide"><div class="eyebrow">06 · PERSISTENT CAMPAIGN & REWARDS</div><h3>Expedition record</h3><p>Mission checkpoints, discoveries, credits, experience and station construction persist in browser storage.</p><ul id="ex-log" class="ex-log"><li>Campaign initialized.</li></ul><button class="save-button" id="ex-reset-campaign">RESET CAMPAIGN</button></article>
           </div>
-          <p class="ex-disclaimer">NOVALUX is an independent educational simulator. This campaign layer provides interactive planning and progression systems, not validated aerospace engineering tools. Transfer budgets, mission durations, crew indicators and construction costs are simplified game parameters. The existing Phase 1–6 simulations remain available as separate operational workspaces.</p>
+          <p class="ex-disclaimer">NOVALUX is an independent educational simulator. This campaign layer provides interactive planning and progression systems, not validated aerospace engineering tools. Transfer budgets, mission durations, crew indicators and construction costs are simplified game parameters. The existing mission-design and engineering simulations remain available as separate operational workspaces.</p>
         </section>
 
         <section class="view" id="challenge-view" aria-label="Space Mission Design Challenge">
@@ -1422,6 +1548,77 @@
         </section>
 
 
+
+        <!-- MISSION CONTROL -->
+        <section class="view" id="mission-control-view" aria-label="Mission control and operations">
+          <div class="section-heading"><div><div class="eyebrow">MISSION EXECUTION</div><h2>Mission Control</h2><p class="section-description">Run an integrated educational mission using the current spacecraft design, mission profile, and ground-segment assumptions.</p></div><span class="status-tag" id="mc-status">READY</span></div>
+          <div class="mc-toolbar panel"><div><small>MISSION</small><strong id="mc-mission-name">Awaiting mission design</strong><p id="mc-design-summary">Importing current spacecraft configuration…</p></div><div class="mc-controls"><button class="primary-button" id="mc-start">START MISSION</button><button class="save-button" id="mc-pause" disabled>PAUSE</button><button class="save-button" id="mc-reset">RESET</button><label class="mc-speed">SIM SPEED<select id="mc-speed"><option value="1">1×</option><option value="2">2×</option><option value="5">5×</option><option value="10">10×</option></select></label></div></div>
+          <div class="mc-progress panel"><div class="mc-progress-head"><span>MISSION ELAPSED TIME</span><b id="mc-clock">T+ 00:00:00</b><span id="mc-stage">PRE-LAUNCH</span></div><div class="mc-progress-track"><span id="mc-progress-fill"></span></div><div class="mc-stage-list" id="mc-stage-list"></div></div>
+          <div class="mc-telemetry-grid" id="mc-telemetry"></div>
+          <div class="mc-two-col"><article class="panel"><div class="panel-heading"><div><div class="eyebrow">FLIGHT DYNAMICS</div><h3>Mission state</h3></div><span class="status-tag">SIMULATED</span></div><div id="mc-flight-state" class="mc-flight-state"></div><div class="mc-mini-chart" id="mc-resource-chart" aria-label="Resource reserve history"></div></article><article class="panel"><div class="panel-heading"><div><div class="eyebrow">OPERATIONS CONSOLE</div><h3>Event & decision queue</h3></div></div><div id="mc-event-panel" class="mc-event-panel">No active events. Mission events will appear during operations.</div><div class="mc-log" id="mc-log" aria-live="polite"></div></article></div>
+          <p class="mc-note">Educational simulation: mission time is accelerated and the telemetry is generated from simplified resource models. It is not connected to real spacecraft or live ground stations.</p>
+        </section>
+
+        <!-- SCIENCE RESULTS -->
+        <section class="view" id="science-results-view" aria-label="Scientific results and mission evaluation">
+          <div class="section-heading"><div><div class="eyebrow">SCIENCE RETURN & EVALUATION</div><h2>Scientific Results Laboratory</h2><p class="section-description">Evaluate observation yield, objective relevance, data return, and mission performance after a simulated mission.</p></div><span class="status-tag" id="sr-status">AWAITING MISSION</span></div>
+          <div class="sr-summary panel"><div><div class="eyebrow">MISSION SCIENCE SCORE</div><strong id="sr-score">—</strong><span>/ 100</span><p id="sr-verdict">Complete a mission simulation to generate scientific results.</p></div><div class="sr-score-ring" id="sr-ring"><span id="sr-ring-value">—</span></div></div>
+          <div class="mc-telemetry-grid" id="sr-metrics"></div>
+          <div class="sr-grid"><article class="panel"><div class="eyebrow">OBSERVATION CAMPAIGN</div><h3>Science return</h3><div id="sr-observations"></div></article><article class="panel"><div class="eyebrow">DATA DELIVERY</div><h3>Communications performance</h3><div id="sr-downlink"></div></article><article class="panel sr-wide"><div class="eyebrow">MISSION EVALUATION</div><h3>Objective & engineering review</h3><div id="sr-evaluation"></div></article></div>
+          <div class="panel sr-report-actions"><div><b>Mission science report</b><p>Export a portable JSON report containing the mission configuration, simulated outcomes, observations, and evaluation.</p></div><button class="primary-button" id="sr-export" disabled>EXPORT SCIENCE REPORT</button></div>
+        </section>
+
+        <!-- TEAM WORKSPACE -->
+        <section class="view" id="team-collab-view" aria-label="Team collaboration workspace">
+          <div class="section-heading"><div><div class="eyebrow">COLLABORATIVE MISSION DESIGN</div><h2>Mission Team Workspace</h2><p class="section-description">Organize a mission team of up to four people, assign responsibilities, track shared tasks, and exchange a portable project file.</p></div><span class="status-tag" id="tc-status">LOCAL TEAM</span></div>
+          <div class="tc-layout"><article class="panel"><div class="panel-heading"><div><div class="eyebrow">01 / CREW MANIFEST</div><h3>Mission team</h3></div><button class="save-button" id="tc-add-member">ADD MEMBER</button></div><div id="tc-members" class="tc-members"></div><p class="mc-note">This workspace supports up to four collaborators sharing this browser/device. It does not provide remote accounts, live internet sync, or public chat.</p></article><article class="panel"><div class="eyebrow">02 / SHARED MISSION BRIEF</div><h3>Project snapshot</h3><div id="tc-project-summary" class="tc-project-summary"></div><div class="tc-actions"><button class="save-button" id="tc-import-design">REFRESH FROM DESIGNER</button><button class="save-button" id="tc-apply-imported" hidden>APPLY IMPORTED DESIGN</button><button class="save-button" id="tc-export">EXPORT TEAM PROJECT</button><label class="save-button tc-import-label" for="tc-import-file">IMPORT TEAM PROJECT</label><input id="tc-import-file" type="file" accept=".json,application/json" hidden></div></article><article class="panel tc-wide"><div class="panel-heading"><div><div class="eyebrow">03 / SHARED TASK BOARD</div><h3>Mission work packages</h3></div><span id="tc-task-count" class="status-tag">0 OPEN</span></div><form id="tc-task-form" class="tc-task-form"><label>Task title<input id="tc-task-title" maxlength="100" required placeholder="e.g. Review downlink assumptions"></label><label>Owner<select id="tc-task-owner"></select></label><label>Priority<select id="tc-task-priority"><option value="normal">Normal</option><option value="high">High</option><option value="critical">Critical</option></select></label><button class="primary-button" type="submit">ADD TASK</button></form><div id="tc-task-list" class="tc-task-list"></div></article><article class="panel tc-wide"><div class="eyebrow">04 / TEAM DECISIONS & SIGN-OFF</div><h3>Mission review checklist</h3><p class="mp-help">Record team agreement before executing or exporting the mission. Sign-offs are stored in this browser and included in the team project export.</p><div id="tc-review-list" class="tc-review-list"></div></article></div>
+        </section>
+
+        <!-- MISSION SCENARIOS -->
+        <section class="view" id="scenarios-view" aria-label="Mission scenarios and game modes">
+          <div class="section-heading"><div><div class="eyebrow">MISSION SCENARIOS</div><h2>Choose Your Mission Experience</h2><p class="section-description">Select a guided learning path, standard mission, advanced anomaly challenge, science-focused campaign, or open sandbox. Your choice changes the operational scenario used by Mission Control.</p></div><span class="status-tag" id="scenario-status">STANDARD MODE</span></div>
+          <div class="scenario-feature panel"><div><div class="eyebrow">ACTIVE SCENARIO</div><h3 id="scenario-active-title">Standard Mission</h3><p id="scenario-active-description">A balanced mission experience with the default operations model.</p><div class="scenario-tags" id="scenario-active-tags"></div></div><button class="primary-button" id="scenario-open-control" type="button">OPEN MISSION CONTROL</button></div>
+          <div class="scenario-grid" id="scenario-grid"></div>
+          <div class="panel scenario-brief"><div class="eyebrow">MISSION CHALLENGE</div><h3 id="scenario-challenge-title">Complete the mission and return its science data</h3><p id="scenario-challenge-description">Use a complete spacecraft design, manage resources, respond to operational events, and return at least half of the generated science data.</p><div class="scenario-challenge-metrics" id="scenario-challenge-metrics"></div></div>
+          <p class="mc-note">Scenario modes are deterministic educational game settings. They do not represent real mission risk predictions or real spacecraft operating procedures.</p>
+        </section>
+
+        <!-- PROJECT RELEASE CENTER -->
+        <section class="view" id="release-view" aria-label="Project validation and release center">
+          <div class="section-heading"><div><div class="eyebrow">PROJECT VALIDATION</div><h2>Mission Readiness & Release Center</h2><p class="section-description">Review your project configuration, mission evidence, team sign-offs, and export a complete NOVALUX mission dossier.</p></div><span class="status-tag" id="release-status">REVIEW REQUIRED</span></div>
+          <div class="release-summary panel"><div><div class="eyebrow">READINESS SCORE</div><strong id="release-score">0%</strong><p id="release-verdict">Complete the readiness checks to prepare your mission dossier.</p></div><div class="release-ring"><span id="release-ring-value">0%</span></div></div>
+          <div class="release-layout"><article class="panel"><div class="panel-heading"><div><div class="eyebrow">AUTOMATED VALIDATION</div><h3>Project checks</h3></div><button class="save-button" id="release-refresh" type="button">RUN CHECKS</button></div><div id="release-checks" class="release-checks"></div></article><article class="panel"><div class="eyebrow">MANUAL RELEASE REVIEW</div><h3>Final sign-off</h3><p class="mc-note">These checks are recorded locally and included in the exported dossier.</p><div id="release-manual-checks" class="release-checks"></div></article><article class="panel release-wide"><div class="panel-heading"><div><div class="eyebrow">DELIVERABLE</div><h3>Final mission dossier</h3></div><span class="status-tag" id="release-dossier-status">NOT EXPORTED</span></div><p class="section-description">The dossier includes the current mission, spacecraft selections, operations configuration, simulation record, science evaluation, team plan, selected scenario, and release checklist.</p><div class="release-actions"><button class="primary-button" id="release-export" type="button">EXPORT FINAL MISSION DOSSIER</button><button class="save-button" id="release-print" type="button">PRINT READINESS SUMMARY</button></div><p class="mc-note">Exporting a dossier does not certify the spacecraft design. All engineering and science outputs remain educational approximations.</p></article></div>
+        </section>
+
+        <!-- PLAYER GUIDE -->
+        <section class="view" id="guide-view" aria-label="NOVALUX game guide">
+          <div class="section-heading"><div><div class="eyebrow">PLAYER HANDBOOK</div><h2>How to Play NOVALUX</h2><p class="section-description">A practical walkthrough for first-time players, with device-specific controls and mission tips.</p></div><span class="status-tag">START HERE</span></div>
+          <div class="guide-grid">
+            <article class="panel guide-card guide-wide"><div class="eyebrow">FIRST MISSION · QUICK START</div><h3>Your first mission, step by step</h3><ol class="guide-steps"><li><b>Choose a destination.</b><span>Select Earth, Moon, or Mars from the mission database.</span></li><li><b>Design your spacecraft.</b><span>Choose a platform, propulsion, power source, instrument, communications system, and launcher. Watch mass, power, and cost.</span></li><li><b>Check the mission plan.</b><span>Review orbit, launch capability, resource margins, and communications before proceeding.</span></li><li><b>Launch and reach orbit.</b><span>Ignite. Keep throttle on during ascent. At 70 km or higher, release the fairing. When a stage runs out of propellant, press Separate Stage. Repeat until the final stage separates; then wait for orbital-insertion verification and continue.</span></li><li><b>Start Mission Gameplay.</b><span>Use the device controls to navigate, avoid hazards, and collect science objects.</span></li><li><b>Review your results.</b><span>Open Science Results and Mission Reports to understand your performance and export evidence.</span></li></ol></article>
+            <article class="panel guide-card"><div class="eyebrow">LAPTOP / DESKTOP</div><h3>Keyboard controls</h3><div class="guide-key-row"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>Move up, left, down, right</span></div><div class="guide-key-row"><kbd>↑</kbd><kbd>←</kbd><kbd>↓</kbd><kbd>→</kbd><span>Alternative movement keys</span></div><p>Keep the gameplay area focused. Movement keys are only captured while Mission Gameplay is the active page.</p></article>
+            <article class="panel guide-card"><div class="eyebrow">PHONE / TABLET</div><h3>Touch controls</h3><div class="guide-touch-demo"><span>▲</span><div><span>◀</span><span>▼</span><span>▶</span></div></div><p>The directional pad appears after you start gameplay. In Rocket Launch, use the large touch action buttons for ignition, pause, fairing, cutoff, stage separation and continue. In the rover, hold the drive/steer controls and tap SCAN / CHECKPOINT near a beacon. Rotate your phone to landscape for launch, docking and rover activities.</p></article>
+            <article class="panel guide-card"><div class="eyebrow">ADVANCED EXPLORATION</div><h3>Vehicle and camera tips</h3><ul><li>Use the on-screen activity buttons or WASD / arrow keys to steer.</li><li>Rover: drive to each glowing sample beacon. When close, press <kbd>E</kbd> or tap SCAN / CHECKPOINT to collect it.</li><li>Docking: use W / S and A / D or the thrust buttons in short pulses. Aim for less than 0.5 m/s relative speed and within 20 m of the station.</li><li>Rotate your phone to landscape for launch, docking and rover play. In the rover 3D view, drag to orbit and use the mouse wheel to zoom; touch pinch zoom is supported where available.</li><li>Double-click the rover view to switch camera mode; press <kbd>C</kbd> to reset follow view.</li></ul></article>
+            <article class="panel guide-card"><div class="eyebrow">MISSION STRATEGY</div><h3>How to improve your score</h3><ul><li>Keep payload mass within the launch vehicle's modeled capacity.</li><li>Maintain a healthy power reserve and avoid unnecessary power demand.</li><li>Choose instruments that match the scientific objective.</li><li>Plan enough communications capacity to return collected data.</li><li>Read event messages before choosing an operational response.</li></ul></article>
+            <article class="panel guide-card guide-wide"><div class="eyebrow">NEED HELP?</div><h3>Recommended learning path</h3><p>Start with <b>Guided Discovery</b> in Mission Scenarios, then follow the first-mission steps above. The engineering and physics models are simplified for learning; use the in-app notes to understand assumptions and limitations.</p><button type="button" class="primary-button" id="guide-open-scenarios">CHOOSE A GUIDED SCENARIO</button></article>
+          </div>
+        </section>
+
+        <!-- APPLICATION SETTINGS -->
+        <section class="view" id="settings-view" aria-label="NOVALUX settings">
+          <div class="section-heading"><div><div class="eyebrow">PREFERENCES & ACCESSIBILITY</div><h2>Settings</h2><p class="section-description">Adjust sound, gameplay preferences, and visual comfort. Your supported preferences are saved in this browser.</p></div><span class="status-tag">LOCAL PREFERENCES</span></div>
+          <div class="settings-grid">
+            <article class="panel settings-card"><div class="eyebrow">AUDIO</div><h3>Sound & ambience</h3><div class="settings-audio-controls" id="settings-audio-controls">
+              <button class="novalux-audio-toggle" id="audio-toggle" type="button" aria-pressed="true" aria-label="Mute sound effects">♫ SOUND ON</button>
+              <label class="novalux-audio-volume" for="audio-volume"><span>VOLUME</span><input id="audio-volume" type="range" min="0" max="100" value="45" step="1"><output id="audio-volume-value" for="audio-volume">45%</output></label>
+              <label class="novalux-audio-ambience" for="audio-ambience"><input id="audio-ambience" type="checkbox"><span>SPACE AMBIENCE</span></label>
+              <span class="novalux-audio-hint" id="audio-hint">Click anywhere to enable audio</span>
+            </div><p class="settings-note">NOVALUX currently provides procedural sound effects and optional space ambience, not a separate music soundtrack.</p></article>
+            <article class="panel settings-card"><div class="eyebrow">GAMEPLAY</div><h3>Control preferences</h3><label class="settings-option"><span><b>Keyboard layout</b><small>Choose your preferred movement keys in the guide.</small></span><select id="setting-key-layout"><option value="both">WASD + Arrow keys</option><option value="wasd">WASD only</option><option value="arrows">Arrow keys only</option></select></label><label class="settings-option"><span><b>Touch control opacity</b><small>Adjust the on-screen movement pad.</small></span><input id="setting-touch-opacity" type="range" min="35" max="100" value="82"></label></article>
+            <article class="panel settings-card"><div class="eyebrow">DISPLAY & COMFORT</div><h3>Visual preferences</h3><label class="settings-check"><input id="setting-reduced-motion" type="checkbox"><span><b>Reduce interface motion</b><small>Reduce animated transitions in supported interface elements.</small></span></label><label class="settings-check"><input id="setting-high-contrast" type="checkbox"><span><b>Increase interface contrast</b><small>Strengthen borders and text contrast across the interface.</small></span></label><p class="settings-note">3D rendering quality adapts to the device and browser. These options do not change the underlying mission physics.</p></article>
+            <article class="panel settings-card"><div class="eyebrow">DATA & PRIVACY</div><h3>Local project data</h3><p>Designs, progress, and preferences are stored locally in this browser unless you export a project or report. Clearing browser storage may remove local progress.</p><button type="button" class="save-button" id="settings-open-guide">OPEN GAME GUIDE</button></article>
+          </div>
+        </section>
+
         <!-- FOOTER -->
 
         <footer>
@@ -1429,7 +1626,7 @@
             <span>NOVALUX SPACE SYSTEMS</span>
 
             <span>
-                EDUCATIONAL SIMULATION PROJECT · ALPHA 0.2
+                EDUCATIONAL SIMULATION PROJECT · ALPHA 0.3
             </span>
 
         </footer>
@@ -1604,6 +1801,9 @@
 
 <!-- Original NOVALUX Alpha 0.2 application -->
 <script src="app.js"></script>
+<script type="module" src="src/mission-workspace.js"></script>
+<script type="module" src="src/mission-operations.js"></script>
+
 
 <!-- Three.js orbital simulation module -->
 <script
@@ -1612,19 +1812,15 @@
 ></script>
 <script type="module" src="src/launch-bootstrap.js"></script>
 <script type="module" src="src/interplanetary-missions.js"></script>
-<script type="module" src="src/phase5-exploration.js"></script>
-<script type="module" src="src/phase6-3d.js"></script>
+<script type="module" src="src/advanced-exploration.js"></script>
+<script type="module" src="src/exploration-3d.js"></script>
 <script type="module" src="src/expedition-command.js"></script>
 <script type="module" src="src/ship/spacecraft-engineering.js"></script>
 <script type="module" src="src/mission-design-challenge.js"></script>
+<script type="module" src="src/mission-control.js"></script>
+<script type="module" src="src/scenario-release.js"></script>
 
-<!-- NOVALUX sound controls -->
-<div class="novalux-audio" id="novalux-audio" aria-label="Sound settings">
-  <button class="novalux-audio-toggle" id="audio-toggle" type="button" aria-pressed="true" aria-label="Mute sound effects">♫ SOUND ON</button>
-  <label class="novalux-audio-volume" for="audio-volume"><span>VOLUME</span><input id="audio-volume" type="range" min="0" max="100" value="45" step="1"><output id="audio-volume-value" for="audio-volume">45%</output></label>
-  <label class="novalux-audio-ambience" for="audio-ambience"><input id="audio-ambience" type="checkbox"><span>SPACE AMBIENCE</span></label>
-  <span class="novalux-audio-hint" id="audio-hint">Click anywhere to enable audio</span>
-</div>
+<!-- Audio controls are housed in the Settings view. -->
 <script src="src/audio-system.js"></script>
 </body>
 </html>

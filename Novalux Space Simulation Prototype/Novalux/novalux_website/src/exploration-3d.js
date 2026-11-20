@@ -1,7 +1,7 @@
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.181.0/build/three.module.js";
 
 const canvas = document.getElementById("p5-3d-canvas");
-if (!canvas) throw new Error("Phase 6 3D canvas missing");
+if (!canvas) throw new Error("Exploration 3D canvas missing");
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 1.5));
 renderer.setSize(1000, 520, false);
@@ -26,10 +26,21 @@ const deck = new THREE.Mesh(new THREE.BoxGeometry(3.4,.28,2.8), goldMat); deck.p
 const mast = new THREE.Mesh(new THREE.CylinderGeometry(.13,.18,2.2,12), darkMat); mast.position.set(0,4.2,-.6); rover.add(mast);
 const camHead = new THREE.Mesh(new THREE.BoxGeometry(.9,.55,.65), goldMat); camHead.position.set(0,5.25,-.6); rover.add(camHead);
 const wheels=[], wheelHubs=[];
-for (const x of [-2.1,2.1]) for (const z of [-2.0,2.0]) {
-  const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.88,.88,.58,20),darkMat); wheel.rotation.z=Math.PI/2; wheel.position.set(x,1.15,z); wheel.castShadow=true; rover.add(wheel); wheels.push(wheel);
-  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,.62,16),goldMat); hub.rotation.z=Math.PI/2; hub.position.copy(wheel.position); rover.add(hub); wheelHubs.push(hub);
+for (const x of [-2.25,0,2.25]) for (const z of [-2.0,2.0]) {
+  const wheel=new THREE.Mesh(new THREE.CylinderGeometry(.88,.88,.58,24),darkMat); wheel.rotation.z=Math.PI/2; wheel.position.set(x,1.15,z); wheel.castShadow=true; wheel.receiveShadow=true; rover.add(wheel); wheels.push(wheel);
+  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.35,.35,.62,20),goldMat); hub.rotation.z=Math.PI/2; hub.position.copy(wheel.position); rover.add(hub); wheelHubs.push(hub);
+  const hubCap=new THREE.Mesh(new THREE.CylinderGeometry(.16,.16,.66,16),bodyMat);hubCap.rotation.z=Math.PI/2;hubCap.position.copy(wheel.position);rover.add(hubCap);
 }
+// Six-wheel rocker-bogie suspension gives the rover a more recognizable planetary chassis.
+for(const side of [-1,1]){
+  const z=side*1.68;
+  const rocker=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,5.0,10),goldMat);rocker.rotation.z=Math.PI/2;rocker.position.set(0,1.85,z);rocker.castShadow=true;rover.add(rocker);
+  const bogie=new THREE.Mesh(new THREE.CylinderGeometry(.10,.10,2.2,10),darkMat);bogie.rotation.z=Math.PI/2;bogie.position.set(side*.0,1.55,z);rover.add(bogie);
+  for(const x of [-2.25,2.25]){const strut=new THREE.Mesh(new THREE.CylinderGeometry(.09,.09,1.0,8),bodyMat);strut.position.set(x,1.55,z);strut.rotation.z=x<0?-.38:.38;rover.add(strut);}
+}
+// Instrument mast details and visible front sensor cluster.
+const mastBrace=new THREE.Mesh(new THREE.BoxGeometry(.16,1.2,.16),goldMat);mastBrace.position.set(0,3.95,-.6);mastBrace.rotation.z=-.35;rover.add(mastBrace);
+const lens=new THREE.Mesh(new THREE.CylinderGeometry(.23,.23,.12,20),mat(0x3c9ac8,.2,.7));lens.rotation.x=Math.PI/2;lens.position.set(0,5.25,-.96);rover.add(lens);
 for (const side of [-1,1]) { const panel=new THREE.Mesh(new THREE.BoxGeometry(3.5,.12,1.55),panelMat); panel.position.set(side*4.8,2.7,0); rover.add(panel); }
 // Keep terrain generation and rover contact sampling on the same world-space height function.
 function terrainHeight(x,z){return Math.sin(x*.025)*2.3+Math.cos(z*.034)*1.8+Math.sin((x-z)*.012)*2.5;}
@@ -85,29 +96,33 @@ const roverCamera={yaw:0,pitch:.42,distance:64,mode:"follow",dragging:false,last
 // Independent docking orbit camera, initialized to the original fixed view.
 const dockingCamera={yaw:0,pitch:Math.atan2(245,610),distance:Math.hypot(245,610),dragging:false,lastX:0,lastY:0};
 canvas.style.touchAction="none";
+const explorationPointers=new Map();let explorationPinchDistance=0;
+canvas.addEventListener("pointerdown",e=>{explorationPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(explorationPointers.size===2){const pts=[...explorationPointers.values()];explorationPinchDistance=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);roverCamera.dragging=false;dockingCamera.dragging=false;}});
+canvas.addEventListener("pointermove",e=>{if(!explorationPointers.has(e.pointerId))return;explorationPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(explorationPointers.size<2)return;const pts=[...explorationPointers.values()],distance=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);if(explorationPinchDistance>0){const ratio=explorationPinchDistance/Math.max(1,distance);if(currentMode==="rover")roverCamera.distance=THREE.MathUtils.clamp(roverCamera.distance*ratio,18,150);if(currentMode==="docking")dockingCamera.distance=THREE.MathUtils.clamp(dockingCamera.distance*ratio,180,1100);}explorationPinchDistance=distance;roverCamera.dragging=false;dockingCamera.dragging=false;});
+for(const type of ["pointerup","pointercancel","lostpointercapture"])canvas.addEventListener(type,e=>{explorationPointers.delete(e.pointerId);if(explorationPointers.size<2)explorationPinchDistance=0;});
 canvas.addEventListener("pointerdown",e=>{if(currentMode!=="docking")return;dockingCamera.dragging=true;dockingCamera.lastX=e.clientX;dockingCamera.lastY=e.clientY;canvas.setPointerCapture?.(e.pointerId);});
-canvas.addEventListener("pointermove",e=>{if(!dockingCamera.dragging||currentMode!=="docking")return;const dx=e.clientX-dockingCamera.lastX,dy=e.clientY-dockingCamera.lastY;dockingCamera.lastX=e.clientX;dockingCamera.lastY=e.clientY;dockingCamera.yaw-=dx*.008;dockingCamera.pitch=THREE.MathUtils.clamp(dockingCamera.pitch+dy*.006,-1.25,1.25);});
+canvas.addEventListener("pointermove",e=>{if(!dockingCamera.dragging||currentMode!=="docking"||explorationPointers.size>1)return;const dx=e.clientX-dockingCamera.lastX,dy=e.clientY-dockingCamera.lastY;dockingCamera.lastX=e.clientX;dockingCamera.lastY=e.clientY;dockingCamera.yaw-=dx*.008;dockingCamera.pitch=THREE.MathUtils.clamp(dockingCamera.pitch+dy*.006,-1.25,1.25);});
 for(const type of ["pointerup","pointercancel","lostpointercapture"])canvas.addEventListener(type,()=>{dockingCamera.dragging=false;});
 canvas.addEventListener("wheel",e=>{if(currentMode!=="docking")return;e.preventDefault();dockingCamera.distance=THREE.MathUtils.clamp(dockingCamera.distance*Math.exp(e.deltaY*.001),180,1100);},{passive:false});
 canvas.addEventListener("dblclick",()=>{if(currentMode!=="docking")return;dockingCamera.yaw=0;dockingCamera.pitch=Math.atan2(245,610);dockingCamera.distance=Math.hypot(245,610);});
 const roverHud=document.createElement("div");
 roverHud.className="p6-rover-hud";
 roverHud.setAttribute("aria-live","polite");
-roverHud.innerHTML='<div class="p6-rover-hud-top"><strong>ROVER NAVIGATION</strong><span class="p6-rover-camera-mode">FOLLOW CAMERA</span></div><div class="p6-rover-target"><span class="p6-rover-arrow">➤</span><span class="p6-rover-target-copy">NEXT SAMPLE · 90 m</span></div><div class="p6-rover-hud-help">DRAG: ORBIT · WHEEL: ZOOM · DOUBLE-CLICK: OVERHEAD / FOLLOW · C: RESET CAMERA</div>';
+roverHud.innerHTML='<div class="p6-rover-hud-top"><strong>ROVER NAVIGATION</strong><span class="p6-rover-camera-mode">FOLLOW CAMERA</span></div><div class="p6-rover-target"><span class="p6-rover-arrow">➤</span><span class="p6-rover-target-copy">NEXT SAMPLE · 90 m</span></div><div class="p6-rover-meters"><span>SPEED <b class="p6-rover-speed">0.0 m/s</b></span><span>BATTERY <b class="p6-rover-battery">85%</b></span><span>CHECKPOINTS <b class="p6-rover-samples">0 / 3</b></span></div><div class="p6-rover-hud-help">DRIVE: W / S · STEER: A / D · SCAN CHECKPOINT: E · DRAG: ORBIT · C: RESET CAMERA</div>';
 canvas.parentElement?.appendChild(roverHud);
-const roverArrow=roverHud.querySelector(".p6-rover-arrow"),roverTargetCopy=roverHud.querySelector(".p6-rover-target-copy"),roverCameraMode=roverHud.querySelector(".p6-rover-camera-mode");
+const roverArrow=roverHud.querySelector(".p6-rover-arrow"),roverTargetCopy=roverHud.querySelector(".p6-rover-target-copy"),roverCameraMode=roverHud.querySelector(".p6-rover-camera-mode"),roverSpeed=roverHud.querySelector(".p6-rover-speed"),roverBattery=roverHud.querySelector(".p6-rover-battery"),roverSamples=roverHud.querySelector(".p6-rover-samples");
 canvas.addEventListener("pointerdown",e=>{if(currentMode!=="rover")return;roverCamera.dragging=true;roverCamera.lastX=e.clientX;roverCamera.lastY=e.clientY;canvas.setPointerCapture?.(e.pointerId);});
-canvas.addEventListener("pointermove",e=>{if(!roverCamera.dragging||currentMode!=="rover")return;const dx=e.clientX-roverCamera.lastX,dy=e.clientY-roverCamera.lastY;roverCamera.lastX=e.clientX;roverCamera.lastY=e.clientY;roverCamera.yaw-=dx*.008;roverCamera.pitch=Math.max(.14,Math.min(1.38,roverCamera.pitch+dy*.006));roverCamera.mode="ORBIT";});
+canvas.addEventListener("pointermove",e=>{if(!roverCamera.dragging||currentMode!=="rover"||explorationPointers.size>1)return;const dx=e.clientX-roverCamera.lastX,dy=e.clientY-roverCamera.lastY;roverCamera.lastX=e.clientX;roverCamera.lastY=e.clientY;roverCamera.yaw-=dx*.008;roverCamera.pitch=Math.max(.14,Math.min(1.38,roverCamera.pitch+dy*.006));roverCamera.mode="ORBIT";});
 for(const type of ["pointerup","pointercancel","lostpointercapture"])canvas.addEventListener(type,()=>{roverCamera.dragging=false;});
 canvas.addEventListener("wheel",e=>{if(currentMode!=="rover")return;e.preventDefault();roverCamera.distance=Math.max(18,Math.min(150,roverCamera.distance*Math.exp(e.deltaY*.001)));},{passive:false});
 canvas.addEventListener("dblclick",()=>{if(currentMode!=="rover")return;if(roverCamera.mode==="OVERHEAD"){roverCamera.mode="FOLLOW";roverCamera.pitch=.42;roverCamera.distance=64;}else{roverCamera.mode="OVERHEAD";roverCamera.pitch=1.32;roverCamera.distance=92;}});
 window.addEventListener("keydown",e=>{if((e.key==="c"||e.key==="C")&&currentMode==="rover"){roverCamera.mode="FOLLOW";roverCamera.yaw=0;roverCamera.pitch=.42;roverCamera.distance=64;}});
-function resize(){const w=canvas.clientWidth||1000,h=canvas.clientHeight||520;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
-new ResizeObserver(resize).observe(canvas);resize();
-function render(mode,state){currentMode=mode;lastState=state;roverGroup.visible=mode==="rover";dockingGroup.visible=mode==="docking";roverHud.style.display=mode==="rover"?"block":"none";if(mode==="rover"){const x=state.x||0,z=state.z||0,heading=state.heading||0,ground=terrainHeight(x,z);rover.position.set(x,ground-.27,z);rover.rotation.y=heading;wheels.forEach((w,i)=>{w.rotation.x+=(state.v||0)*.035;const lx=w.userData.localX??w.position.x,lz=w.userData.localZ??w.position.z;w.userData.localX=lx;w.userData.localZ=lz;const wx=x+Math.cos(heading)*lx+Math.sin(heading)*lz,wz=z-Math.sin(heading)*lx+Math.cos(heading)*lz;w.position.y=1.15+terrainHeight(wx,wz)-ground;wheelHubs[i].position.y=w.position.y;});sampleMeshes.forEach((m,i)=>{m.orb.material.color.set(state.samples?.[i]?0x55e6ae:0xffd66e);m.orb.material.emissive.set(state.samples?.[i]?0x126a48:0x8b5410);});
+function resize(){const w=canvas.clientWidth||1000,h=canvas.clientHeight||520;renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,window.innerWidth<700?1.25:1.75));renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix();}
+if("ResizeObserver" in window)new ResizeObserver(resize).observe(canvas);else window.addEventListener("resize",resize,{passive:true});resize();
+function render(mode,state){currentMode=mode;lastState=state;roverGroup.visible=mode==="rover";dockingGroup.visible=mode==="docking";roverHud.style.display=mode==="rover"?"block":"none";if(mode==="rover"){const x=state.x||0,z=state.z||0,heading=state.heading||0,ground=terrainHeight(x,z);roverSpeed.textContent=`${(state.v||0).toFixed(1)} m/s`;roverBattery.textContent=`${(state.battery??0).toFixed(0)}%`;roverSamples.textContent=`${(state.samples||[]).filter(Boolean).length} / 3`;rover.position.set(x,ground-.27,z);rover.rotation.y=heading;wheels.forEach((w,i)=>{w.rotation.x+=(state.v||0)*.035;const lx=w.userData.localX??w.position.x,lz=w.userData.localZ??w.position.z;w.userData.localX=lx;w.userData.localZ=lz;const wx=x+Math.cos(heading)*lx+Math.sin(heading)*lz,wz=z-Math.sin(heading)*lx+Math.cos(heading)*lz;w.position.y=1.15+terrainHeight(wx,wz)-ground;wheelHubs[i].position.y=w.position.y;});sampleMeshes.forEach((m,i)=>{m.orb.material.color.set(state.samples?.[i]?0x55e6ae:0xffd66e);m.orb.material.emissive.set(state.samples?.[i]?0x126a48:0x8b5410);});
   const sites=[[90,-38],[260,58],[445,-48]];let targetIndex=sites.findIndex((_,i)=>!state.samples?.[i]);if(targetIndex<0){roverTargetCopy.textContent="ALL SCIENCE SITES COMPLETE";roverArrow.style.opacity=".25";}else{const [tx,tz]=sites[targetIndex],dx=tx-x,dz=tz-z,bearing=Math.atan2(dx,-dz)-heading;roverTargetCopy.textContent=`SAMPLE ${targetIndex+1} · ${Math.hypot(dx,dz).toFixed(0)} m`;roverArrow.style.transform=`rotate(${bearing}rad)`;roverArrow.style.opacity="1";}roverCameraMode.textContent=`${roverCamera.mode} · ${roverCamera.distance.toFixed(0)} m`;
   const pitch=roverCamera.pitch,dist=roverCamera.distance,cp=Math.cos(pitch),targetY=ground+2.2;camera.position.set(x+Math.sin(roverCamera.yaw)*dist*cp,targetY+Math.sin(pitch)*dist,z+Math.cos(roverCamera.yaw)*dist*cp);camera.lookAt(x,targetY,z);}
 if(mode==="docking"){const x=state.x||0,y=state.y||0;earth.rotation.y+=.0008;earthClouds.rotation.y+=.0011;station.position.set(0,0,0);craft.position.set(x*.12,y*.12,0);craft.rotation.z=Math.atan2(state.vy||0,state.vx||0);approachLine.geometry.dispose();approachLine.geometry=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x*.12,y*.12,0),new THREE.Vector3(38,0,0)]);approachLine.computeLineDistances();const target=new THREE.Vector3(0,-80,-90),cp=Math.cos(dockingCamera.pitch);camera.position.set(target.x+Math.sin(dockingCamera.yaw)*dockingCamera.distance*cp,target.y+Math.sin(dockingCamera.pitch)*dockingCamera.distance,target.z+Math.cos(dockingCamera.yaw)*dockingCamera.distance*cp);camera.lookAt(target);}
 renderer.render(scene,camera);}
-window.NOVALUXPhase6Scene={render,available:true};
-window.dispatchEvent(new Event("novalux-phase6-3d-ready"));
+window.NOVALUXExplorationScene={render,available:true};
+window.dispatchEvent(new Event("novalux-exploration-3d-ready"));

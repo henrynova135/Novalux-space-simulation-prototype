@@ -46,9 +46,9 @@ function buildPanel() {
     panel.id = "novalux-launch-system";
     panel.className = "launch-system panel";
     panel.innerHTML = `
-      <div class="launch-heading"><div><div class="eyebrow">NOVALUX // PHASE 3</div><h3>Rocket Launch & Ascent</h3><p>Staged launch vehicle · atmospheric drag · gravity turn · payload fairing · orbital insertion</p></div><span id="launch-status" class="orbital-status">CONFIGURE</span></div>
+      <div class="launch-heading"><div><div class="eyebrow">NOVALUX // LAUNCH SYSTEM</div><h3>Rocket Launch & Ascent</h3><p>Staged launch vehicle · atmospheric drag · gravity turn · payload fairing · orbital insertion</p></div><span id="launch-status" class="orbital-status">CONFIGURE</span></div>
       <div class="launch-grid">
-        <div class="launch-visual-panel"><canvas id="launch-3d-canvas" aria-label="Three dimensional live rocket ascent visualization"></canvas><canvas id="launch-canvas" width="900" height="470" aria-label="Live rocket ascent visualization"></canvas><div class="launch-readouts"><span>ALTITUDE <b id="launch-alt">0.0 km</b></span><span>SPEED <b id="launch-speed">0.000 km/s</b></span><span>DOWNRANGE <b id="launch-range">0.0 km</b></span></div></div>
+        <div class="launch-visual-panel"><div class="rotate-phone-hint" role="status"><b>↻ Rotate your phone</b><span>Landscape gives you a wider flight view and room for the mission meters.</span></div><canvas id="launch-3d-canvas" aria-label="Three dimensional live rocket ascent visualization"></canvas><canvas id="launch-canvas" width="900" height="470" aria-label="Live rocket ascent visualization"></canvas><div class="launch-readouts"><span>ALTITUDE <b id="launch-alt">0.0 km</b></span><span>SPEED <b id="launch-speed">0.000 km/s</b></span><span>DOWNRANGE <b id="launch-range">0.0 km</b></span></div><div class="launch-flight-meter"><div><span>ORBITAL ALTITUDE PROGRESS · 400 KM REFERENCE</span><b id="launch-altitude-percent">0%</b></div><div class="launch-meter-track"><i id="launch-altitude-fill"></i></div><p id="launch-live-guidance">Awaiting ignition. Follow the flight sequence and act when a control becomes available.</p></div></div>
         <div class="launch-controls">
           <div class="launch-subhead">VEHICLE & PAYLOAD</div>
           <div class="launch-stat"><span>SPACECRAFT</span><b id="launch-payload">—</b></div>
@@ -62,11 +62,11 @@ function buildPanel() {
           <input id="launch-throttle" type="range" min="0" max="100" value="100" step="1">
           <label class="launch-range-label" for="launch-speed-control">SIMULATION RATE <b id="launch-rate-label">1×</b></label>
           <input id="launch-speed-control" type="range" min="1" max="20" value="1" step="1">
-          <div class="launch-buttons"><button id="launch-ignite" class="primary-button">IGNITION / LIFTOFF</button><button id="launch-pause" class="orbital-button" disabled>PAUSE</button><button id="launch-fairing" class="orbital-button" disabled>JETTISON FAIRING</button><button id="launch-cutoff" class="orbital-button" disabled>ENGINE CUTOFF</button><button id="launch-separate" class="orbital-button" disabled>SEPARATE STAGE</button><button id="launch-reset" class="orbital-button">RESET LAUNCH</button><button id="launch-transfer" class="primary-button" disabled>CONTINUE TO ORBITAL OPERATIONS →</button></div>
+          <div class="launch-buttons"><button id="launch-ignite" class="primary-button">IGNITION / LIFTOFF</button><button id="launch-pause" class="orbital-button" disabled>PAUSE</button><button id="launch-fairing" class="orbital-button" disabled>JETTISON FAIRING</button><button id="launch-cutoff" class="orbital-button" disabled>ENGINE CUTOFF</button><button id="launch-separate" class="orbital-button" disabled>SEPARATE STAGE</button><button id="launch-reset" class="orbital-button">RESET LAUNCH</button><button id="launch-transfer" class="primary-button" disabled>CONTINUE TO ORBITAL OPERATIONS →</button></div><div class="launch-device-keys" aria-label="Desktop keyboard shortcuts"><span><kbd>Space</kbd> Ignite / Pause</span><span><kbd>F</kbd> Fairing</span><span><kbd>X</kbd> Cutoff</span><span><kbd>Enter</kbd> Separate stage</span><span><kbd>R</kbd> Reset</span><span><kbd>C</kbd> Continue</span></div><div class="launch-touch-actions" aria-label="Touch launch controls"><button type="button" data-launch-action="ignite">IGNITE</button><button type="button" data-launch-action="pause" disabled>PAUSE</button><button type="button" data-launch-action="fairing" disabled>FAIRING</button><button type="button" data-launch-action="cutoff" disabled>CUTOFF</button><button type="button" data-launch-action="separate" disabled>SEPARATE STAGE</button><button type="button" data-launch-action="reset">RESET</button><button type="button" data-launch-action="transfer" disabled>CONTINUE</button></div>
           <p class="launch-hint" id="launch-guidance">Select an Earth mission and complete your spacecraft design. Fairing release and every stage separation require your confirmation.</p>
         </div>
       </div>
-      <div class="launch-bottom-grid"><div><div class="launch-subhead">FLIGHT EVENTS</div><ol id="launch-events" class="launch-events"><li>Awaiting vehicle configuration.</li></ol></div><div><div class="launch-subhead">FLIGHT SEQUENCE</div><div class="launch-sequence"><span data-step="0">01 · IGNITION</span><span data-step="1">02 · ASCENT</span><span data-step="2">03 · FAIRING</span><span data-step="3">04 · STAGING</span><span data-step="4">05 · ORBIT INSERTION</span></div><p class="launch-hint">Phase 3 verifies Earth parking orbit. Stage 4 models transfer, arrival, orbit capture and landing.</p></div></div>`;
+      <div class="launch-bottom-grid"><div><div class="launch-subhead">FLIGHT EVENTS</div><ol id="launch-events" class="launch-events"><li>Awaiting vehicle configuration.</li></ol></div><div><div class="launch-subhead">FLIGHT SEQUENCE · WHEN TO ACT</div><div class="launch-sequence"><span data-step="0">01 · IGNITION</span><span data-step="1">02 · ASCENT</span><span data-step="2">03 · FAIRING</span><span data-step="3">04 · STAGING</span><span data-step="4">05 · ORBIT INSERTION</span></div><p class="launch-hint" id="launch-sequence-help">Fairing: wait until 70 km or higher, then press Jettison Fairing. Staging: wait for the stage propellant to reach 0% and the simulator to request separation; press Separate Stage. Repeat for each stage. After the final stage, orbital insertion is checked automatically using altitude, speed and flight direction; 400 km is only a visual reference, not a required exact altitude.</p></div></div>`;
     if (orbital) orbital.insertAdjacentElement("afterend", panel);
     else $("simulation-view")?.appendChild(panel);
     bind();
@@ -98,7 +98,7 @@ function configure() {
           ? "Vehicle is within payload capacity. Launch into Earth orbit, then continue to orbital operations."
           : `Vehicle is within payload capacity. Launch into Earth parking orbit first. Stage 4 will handle the ${mission.toUpperCase()} transfer after orbital insertion.`)
       : "Complete all spacecraft components and select a launch vehicle with enough payload capacity.");
-    // Every interplanetary mission must first launch from Earth. Phase 3
+    // Every interplanetary mission must first launch from Earth. The launch sequence
     // therefore enables Earth ascent for Earth, Moon and Mars destinations.
     $("launch-ignite").disabled = !valid;
     $("launch-transfer").disabled = true;
@@ -119,7 +119,7 @@ function bind() {
     $("launch-speed-control").addEventListener("input", e => { speed = Number(e.target.value); $("launch-rate-label").textContent = `${speed}×`; });
     $("launch-fairing").addEventListener("click", () => { if (sim?.jettisonFairing()) update(sim.telemetry()); });
     $("launch-cutoff").addEventListener("click", () => { if (sim?.cutoff()) { stop(); $("launch-throttle").value = "0"; $("launch-throttle-label").textContent = "0%"; update(sim.telemetry()); } });
-    $("launch-separate").addEventListener("click", () => { if (sim?.separateStage()) { if (sim.status === "ASCENT" && sim.throttle > 0) { running = true; raf = requestAnimationFrame(loop); } update(sim.telemetry()); } });
+    $("launch-separate").addEventListener("click", () => { if (sim?.separateStage()) { if (sim.status === "ASCENT") { sim.setThrottle(1); $("launch-throttle").value = "100"; $("launch-throttle-label").textContent = "100%"; running = true; raf = requestAnimationFrame(loop); } update(sim.telemetry()); } });
     $("launch-reset").addEventListener("click", () => {
       document.dispatchEvent(new Event("novalux:launchreset"));
       configure();
@@ -129,7 +129,23 @@ function bind() {
       const t = sim?.telemetry();
       if (!t?.insertionAchieved) return;
       document.dispatchEvent(new CustomEvent("novalux:launchcomplete", { detail: { altitude: t.altitude, downrange: t.downrange, horizontalVelocity: t.horizontalVelocity, verticalVelocity: t.verticalVelocity, destination: design()?.mission ?? "earth", shipName: currentShip?.name ?? "Custom spacecraft", dryMass: currentShip?.dryMass ?? 0, totalMass: currentShip?.totalMass ?? 0, propellantMass: currentShip?.propellantMass ?? 0, isp: currentShip?.isp ?? 0, deltaV: currentShip?.deltaV ?? 0 } }));
-      set("launch-guidance", "Orbital state transferred to the Phase 1–2 orbital simulator. Continue with spacecraft operations.");
+      set("launch-guidance", "Orbital state transferred to the orbital simulator. Continue with spacecraft operations.");
+    });
+    document.querySelector(".launch-touch-actions")?.addEventListener("click", e => {
+      const action = e.target.closest("[data-launch-action]")?.dataset.launchAction;
+      if (!action) return;
+      const map = { ignite: "launch-ignite", pause: "launch-pause", fairing: "launch-fairing", cutoff: "launch-cutoff", separate: "launch-separate", reset: "launch-reset", transfer: "launch-transfer" };
+      $(map[action])?.click();
+    });
+    window.addEventListener("keydown", e => {
+      if (!document.getElementById("simulation-view")?.classList.contains("active")) return;
+      const tag = e.target?.tagName?.toLowerCase();
+      if (["input", "select", "textarea", "button"].includes(tag) || e.target?.isContentEditable) return;
+      const key = e.key.toLowerCase();
+      if (key === " ") { const id = sim?.status === "READY" ? "launch-ignite" : "launch-pause"; if ($(id)?.disabled) return; e.preventDefault(); $(id)?.click(); return; }
+      const map = { f: "launch-fairing", x: "launch-cutoff", enter: "launch-separate", r: "launch-reset", c: "launch-transfer" };
+      const id = map[key]; if (!id || $(id)?.disabled) return;
+      e.preventDefault(); $(id)?.click();
     });
     document.addEventListener("novalux:designchange", () => { configure(); initLaunch3D(); });
   }
@@ -171,6 +187,20 @@ function bind() {
     set("launch-prop", active ? `${fmt(t.stagePropellant, 1)} kg (${fmt(t.stagePropellantFraction * 100, 0)}%)` : "—");
     set("launch-q", active ? `${fmt(t.maxQ / 1000, 1)} kPa` : "—");
     set("launch-g", active ? `${fmt(t.maxAccelerationG, 2)} g` : "—");
+    const altitudePct = Math.max(0, Math.min(100, (t?.altitude ?? 0) / 400000 * 100));
+    set("launch-altitude-percent", `${altitudePct.toFixed(0)}%`);
+    const altitudeFill = $("launch-altitude-fill"); if (altitudeFill) altitudeFill.style.width = `${altitudePct}%`;
+    let nextAction = "Awaiting ignition. Follow the flight sequence and act when a control becomes available.";
+    if (t?.insertionAchieved) nextAction = "ORBIT ACHIEVED. Press Continue to Orbital Operations.";
+    else if (t?.status === "FAILED") nextAction = `MISSION FAILED: ${t.failureReason || "Review flight events and reset."}`;
+    else if (t?.canSeparate) nextAction = `STAGE ${t.stageIndex + 1} EMPTY. Press SEPARATE STAGE now to discard it and ignite the next stage.`;
+    else if (t?.canJettisonFairing) nextAction = "FAIRING RELEASE WINDOW OPEN (≥70 km). Press Jettison Fairing now.";
+    else if (t?.status === "ASCENT" && t.stagePropellantFraction < .15) nextAction = `STAGE ${t.stageIndex + 1} PROPELLANT LOW (${(t.stagePropellantFraction*100).toFixed(0)}%). Keep monitoring; separation becomes available at depletion.`;
+    else if (t?.status === "ASCENT") nextAction = `ASCENT ACTIVE · Stage ${t.stageIndex+1}/${t.stageCount}. Keep throttle up. Fairing release unlocks at 70 km; stage separation unlocks when this stage runs out of propellant.`;
+    else if (t?.status === "COAST") nextAction = "Final stage separated. Orbital insertion is being verified; wait for the result.";
+    set("launch-live-guidance", nextAction);
+    const touchState = {ignite:$("launch-ignite")?.disabled,pause:$("launch-pause")?.disabled,fairing:$("launch-fairing")?.disabled,cutoff:$("launch-cutoff")?.disabled,separate:$("launch-separate")?.disabled,reset:false,transfer:$("launch-transfer")?.disabled};
+    document.querySelectorAll("[data-launch-action]").forEach(b=>{const a=b.dataset.launchAction;b.disabled=!!touchState[a];b.textContent=({ignite:"IGNITE / LIFTOFF",pause:running?"PAUSE":"RESUME",fairing:"JETTISON FAIRING",cutoff:"ENGINE CUTOFF",separate:"SEPARATE STAGE",reset:"RESET LAUNCH",transfer:"CONTINUE TO ORBIT"})[a];});
     $("launch-pause").disabled = !active || t.status !== "ASCENT" || t.canSeparate;
     $("launch-pause").textContent = running ? "PAUSE" : "RESUME";
     $("launch-fairing").disabled = !t?.canJettisonFairing;

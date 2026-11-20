@@ -6,7 +6,7 @@ const root = path.resolve(import.meta.dirname, "..");
 const scene = fs.readFileSync(path.join(root, "src/launch-3d.js"), "utf8");
 const css = fs.readFileSync(path.join(root, "styles.css"), "utf8");
 
-test("Phase 3 sky transitions from blue atmosphere to deep space with altitude", () => {
+test("existing subsystem sky transitions from blue atmosphere to deep space with altitude", () => {
   assert.match(scene, /new THREE\.SphereGeometry\(180/);
   assert.match(scene, /ShaderMaterial/);
   assert.match(scene, /uAltitude/);
@@ -35,7 +35,7 @@ test("launch camera restores its original composition and supports interactive o
   assert.match(scene, /canvas\.addEventListener\("wheel"/);
   assert.match(scene, /camera\.lookAt\(target\)/);
 });
-test("Phase 3 3D launch viewport has a stable responsive height", () => {
+test("existing subsystem 3D launch viewport has a stable responsive height", () => {
   assert.match(css, /#launch-3d-canvas\s*\{[^}]*height:clamp\(320px, 42vw, 520px\)/);
 });
 

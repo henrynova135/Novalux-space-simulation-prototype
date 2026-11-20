@@ -491,14 +491,22 @@ function navigate(viewName) {
 
     const titles = {
         overview: "Mission Overview",
+        "mission-planner": "Mission Planner",
         designer: "Spacecraft Designer",
         simulation: "Mission Simulation",
         reports: "Mission Reports",
         game: "Mission Gameplay",
-        phase5: "Advanced Space Exploration",
+        exploration: "Advanced Space Exploration",
         expedition: "Expedition Campaign",
         engineering: "Spacecraft Engineering",
-        challenge: "Mission Design Challenge"
+        challenge: "Mission Design Challenge",
+        "mission-control": "Mission Control",
+        "science-results": "Scientific Results",
+        "team-collab": "Team Workspace",
+        scenarios: "Mission Scenarios",
+        release: "Readiness & Release",
+        guide: "Game Guide",
+        settings: "Settings"
     };
 
     setText("page-title", titles[viewName] || "NOVALUX");
@@ -514,6 +522,19 @@ document.querySelectorAll(".nav-item").forEach(button => {
 });
 
 bind("start-design", "click", () => navigate("designer"));
+bind("guide-open-scenarios", "click", () => navigate("scenarios"));
+bind("settings-open-guide", "click", () => navigate("guide"));
+
+// Persist supported interface preferences without changing mission simulation values.
+(() => {
+    const read=(key,fallback)=>{try{return localStorage.getItem("novalux-pref-"+key)??fallback;}catch(_){return fallback;}};
+    const save=(key,value)=>{try{localStorage.setItem("novalux-pref-"+key,String(value));}catch(_){/* session-only if storage is unavailable */}};
+    const opacity=$("setting-touch-opacity"), reduced=$("setting-reduced-motion"), contrast=$("setting-high-contrast"), layout=$("setting-key-layout");
+    if(opacity){opacity.value=read("touch-opacity","82");document.documentElement.style.setProperty("--touch-pad-opacity",Number(opacity.value)/100);opacity.addEventListener("input",()=>{document.documentElement.style.setProperty("--touch-pad-opacity",Number(opacity.value)/100);save("touch-opacity",opacity.value);});}
+    if(reduced){reduced.checked=read("reduced-motion","false")==="true";document.body.classList.toggle("novalux-reduced-motion",reduced.checked);reduced.addEventListener("change",()=>{document.body.classList.toggle("novalux-reduced-motion",reduced.checked);save("reduced-motion",reduced.checked);});}
+    if(contrast){contrast.checked=read("high-contrast","false")==="true";document.body.classList.toggle("novalux-high-contrast",contrast.checked);contrast.addEventListener("change",()=>{document.body.classList.toggle("novalux-high-contrast",contrast.checked);save("high-contrast",contrast.checked);});}
+    if(layout){layout.value=read("key-layout","both");layout.addEventListener("change",()=>save("key-layout",layout.value));}
+})();
 
 document.querySelectorAll(".mission-link").forEach(button => {
     button.addEventListener("click", () => {
@@ -1867,7 +1888,10 @@ document.addEventListener("keydown", event => {
         "a", "d", "w", "s"
     ];
 
-    if (keys.includes(event.key)) {
+    const keyLayout=document.getElementById("setting-key-layout")?.value || "both";
+    const isArrow=event.key.startsWith("Arrow");
+    const allowed=keyLayout==="both" || (keyLayout==="wasd" && !isArrow) || (keyLayout==="arrows" && isArrow);
+    if (keys.includes(event.key) && allowed) {
         event.preventDefault();
         setGameKey(event.key, true);
     }
@@ -1912,6 +1936,14 @@ bindGameControl("game-right", "right");
 bindGameControl("game-up", "up");
 bindGameControl("game-down", "down");
 
+// Mobile-only overlay controls remain available throughout an active gameplay session.
+document.querySelectorAll("[data-game-touch]").forEach(button=>{
+    const direction=button.dataset.gameTouch;
+    const press=event=>{event.preventDefault();if(!missionGame.active)return;button.classList.add("pressed");if(!missionGame.keys[direction]){missionGame.keys[direction]=true;dispatchMissionGameSound("thruster");}};
+    const release=event=>{event.preventDefault();button.classList.remove("pressed");missionGame.keys[direction]=false;};
+    button.addEventListener("pointerdown",press);
+    ["pointerup","pointercancel","pointerleave","lostpointercapture"].forEach(type=>button.addEventListener(type,release));
+});
 
 /* =========================================================
    26. GAME START / STOP
@@ -1928,6 +1960,7 @@ function startMissionGame() {
     missionGame.active = true;
     missionGame.finished = false;
     missionGame.lastTime = performance.now();
+    $("game-touch-controls")?.classList.add("active");
     dispatchMissionGameSound("start");
 
     $("game-overlay")?.classList.add("hidden");
@@ -1939,6 +1972,8 @@ function startMissionGame() {
 
 function stopMissionGame() {
     missionGame.active = false;
+    $("game-touch-controls")?.classList.remove("active");
+    document.querySelectorAll("[data-game-touch]").forEach(button=>button.classList.remove("pressed"));
 
     if (missionGame.animationFrame !== null) {
         cancelAnimationFrame(missionGame.animationFrame);
@@ -2655,9 +2690,44 @@ window.NOVALUX = Object.freeze({
     getDesign() {
         return {
             mission: state.mission,
+            missionId: missions[state.mission].id,
+            missionName: missions[state.mission].name,
+            objective: state.objective,
+            duration: state.duration,
             selections: { ...state.selections },
             components
         };
+    },
+    setMission(key, objective) {
+        if (!missions[key]) return false;
+        selectMission(key);
+        if (objective && missions[key].objectives.includes(objective)) {
+            state.objective = objective;
+            populateMissionInterface();
+            updateInterface();
+        }
+        document.dispatchEvent(new Event("novalux:designchange"));
+        return true;
+    },
+    setObjective(objective) {
+        if (!missions[state.mission].objectives.includes(objective)) return false;
+        state.objective = objective;
+        populateMissionInterface();
+        updateInterface();
+        return true;
+    },
+    setDuration(months) {
+        const value = Math.max(1, Math.min(60, Number(months) || 1));
+        state.duration = value;
+        populateMissionInterface();
+        updateInterface();
+        return value;
+    },
+    selectComponent(category, name) {
+        if (!categoryKeys.includes(category) || !getComponent(category, name)) return false;
+        selectComponent(category, name);
+        document.dispatchEvent(new Event("novalux:designchange"));
+        return true;
     }
 });
 

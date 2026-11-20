@@ -1,107 +1,81 @@
-# NOVALUX 🚀
-### Interactive Space Mission Design and Operations Game
+# NOVALUX — Interactive Space Mission Design & Operations Game
 
-**NOVALUX** is an interactive educational space mission design game that allows players to experience the challenges of planning, designing, and managing a space mission.
+NOVALUX is an educational browser-based space mission design and operations game. Players define a mission, build a spacecraft, choose instruments and launch systems, plan orbits and communications, run mission operations, evaluate science return, and organize a small project team.
 
-Players take on the role of mission designers, making decisions about spacecraft systems, scientific instruments, launch vehicles, orbits, budgets, power, communications, and mission reliability.
+## Main capabilities
 
-The goal is to create a successful mission while balancing engineering constraints and scientific objectives.
+- **Mission planning:** mission concepts, objectives, requirements, maturity tracking, engineering review, and instrument suitability.
+- **Spacecraft design:** platform, propulsion, power, science payload, communications, and launch vehicle selection.
+- **Launch and exploration:** staged launch simulation, orbital operations, rover exploration, rendezvous and docking activities.
+- **Engineering workbench:** modular spacecraft assembly, deployment, mass properties, propulsion operations, and component failure testing.
+- **Mission operations planning:** launch-vehicle compatibility, circular-orbit estimates, engineering trade studies, and ground-link budget estimates.
+- **Mission Control:** accelerated mission timeline, telemetry, resource tracking, operational events, and player decisions.
+- **Science Results:** objective relevance, observation yield, data return, engineering checks, and JSON report export.
+- **Team Workspace:** up to four local collaborators, role assignments, task board, review sign-offs, and portable project import/export.
+- **Mission Scenarios:** Guided Discovery, Standard Mission, Anomaly Response, Science Campaign, and Open Sandbox. Scenario choice changes the educational operations model.
+- **Readiness & Release:** automated project checks, manual release checklist, readiness score, and final mission dossier export.
 
----
+## Run locally
 
-## 🌌 Project Overview
+### Requirements
+- Node.js 20 or newer
+- A modern browser with WebGL support
+- Internet access for the Three.js CDN module and Google Fonts
+- No npm packages are required
 
-Space missions require careful planning and coordination across many engineering disciplines. NOVALUX turns this complex process into an interactive learning experience.
+### Start
 
-Players can explore mission concepts, build spacecraft configurations, simulate mission scenarios, and evaluate how their decisions affect mission performance.
+```bash
+cd novalux_website
+npm run dev
+```
 
-NOVALUX is designed for students, space enthusiasts, and anyone interested in learning how space missions are planned and operated.
+Open **http://127.0.0.1:8000**. Do not open `index.html` directly with `file://`; the application uses JavaScript ES modules.
 
-## ✨ Features
+### Verify
 
-### Mission Design Challenge
-- Choose mission destinations, including Earth orbit, the Moon, Mars, and deep space.
-- Select mission objectives and difficulty levels.
-- Configure spacecraft components and scientific instruments.
-- Choose launch vehicles and orbital destinations.
-- Evaluate spacecraft mass, power, budget, communications, and reliability.
+```bash
+npm run check
+npm test
+```
 
-### Spacecraft Engineering
-- Explore spacecraft configurations.
-- Select propulsion systems and scientific payloads.
-- Review engineering constraints and mission performance.
-- Test different spacecraft designs.
+## Project structure
 
-### Space Mission Simulation
-- Explore interactive space environments.
-- Simulate orbital movement and mission operations.
-- Experience mission events and challenges.
-- Explore different mission scenarios.
+- `index.html`, `styles.css`, `app.js` — primary application interface and spacecraft designer.
+- `src/mission-architecture.js`, `src/mission-workspace.js` — mission concept and planning workspace.
+- `src/mission-control.js` — mission execution, telemetry, science evaluation, and team workspace.
+- `src/scenario-config.js`, `src/scenario-release.js` — scenario modes, release readiness, and final dossier generation.
+- `src/physics/` and `src/ship/` — orbital, launch, spacecraft, and engineering models.
+- `tests/` — automated model, integration, and source checks.
 
-### Mission Management
-- Monitor mission performance.
-- Respond to random mission events.
-- Evaluate scientific results and mission success.
-- Save and export mission designs.
+## Documentation
 
-## 🛠️ Technologies Used
+- `PROJECT_AUDIT.md` — original project audit and stabilization notes.
+- `MISSION_PLANNER_IMPLEMENTATION.md` — mission concept, requirements, and instrument-planning implementation.
+- `MISSION_OPERATIONS_IMPLEMENTATION.md` — launch/orbit, trade-study, and communications implementation.
+- `MISSION_CONTROL_AND_TEAM_IMPLEMENTATION.md` — mission operations, science return, and collaboration details.
+- `FINAL_RELEASE_NOTES.md` — scenario modes, readiness workflow, test results, and known limitations.
 
-- HTML5
-- CSS3
-- JavaScript
-- Three.js
-- Browser Local Storage
+## Educational model limitations
 
-## 🚀 Getting Started
+NOVALUX is an educational game, not a professional aerospace engineering tool. Mission timelines, resource usage, launch-vehicle capacities, component costs, science scores, and anomaly events are simplified game models. Orbit calculations are not a complete trajectory design system. Ground-link estimates do not use real station visibility or schedules. No live spacecraft telemetry or NASA Deep Space Network integration is provided. Team collaboration is local-browser and portable-file based; it is not online multiplayer or real-time cloud synchronization.
 
-### Run Locally
+## Project links
 
-1. Clone this repository:
+- Live demo: https://novalux-space-simulation-prototype.vercel.app/
+- GitHub: https://github.com/henrynova135/Novalux-space-simulation-prototype
 
-   ```bash
-   git clone https://github.com/henrynova135/Novalux-space-simulation-prototype.git
-   ```
+## Credits
 
-2. Open the project folder.
+Built with HTML, CSS, JavaScript, and Three.js. AI tools were used as development assistance for coding support, debugging, troubleshooting, and documentation. External assets and libraries should be credited according to their respective licences.
 
-3. Navigate to the `novalux_website` directory.
+**NOVALUX — Explore. Design. Simulate. Discover.**
 
-4. Open `index.html` in your browser.
+## Player experience & accessibility
 
-   For the best experience, use a local development server such as the VS Code Live Server extension if needed.
+- **Game Guide:** step-by-step first mission walkthrough, laptop keyboard keycaps, mobile touch instructions, advanced exploration tips, and mission strategy.
+- **Settings:** sound effects and optional ambience controls, saved control preferences, touch-pad opacity, reduced-motion preference, and higher-contrast interface option.
+- **Responsive gameplay controls:** phones and touch devices show a directional overlay only while Mission Gameplay is running; desktop players see keyboard keycaps and use WASD or arrow keys.
+- **3D rover update:** six-wheel articulated rocker-bogie layout, instrument mast details, responsive rendering resolution, and viewport resize handling.
 
-## 🌐 Live Website
-
-NOVALUX is deployed using **Vercel**.
-
-**Live Demo:** https://novalux-space-simulation-prototype.vercel.app/
-
-**GitHub Repository:** https://github.com/henrynova135/Novalux-space-simulation-prototype
-
-## 🎯 Educational Purpose
-
-NOVALUX is an educational simulation designed to introduce users to the concepts involved in space mission planning and spacecraft engineering.
-
-Its calculations and simulations are simplified for learning and experimentation. They are not intended for professional engineering, real spacecraft design, or actual flight operations.
-
-## 🤖 AI and Development Acknowledgment
-
-AI tools, including ChatGPT, were used as development assistance for coding support, debugging, troubleshooting, explanations, and documentation.
-
-The project was developed and assembled by the project team. External assets, libraries, and other resources should be credited in accordance with their respective licences and usage requirements.
-
-## 📄 Credits and Resources
-
-- [Three.js](https://threejs.org/)
-- [MDN Web Docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-- [NASA](https://www.nasa.gov/) — educational reference materials, where applicable.
-
-See the project submission's data and resources fields for the complete list of resources actually used.
-
-## 👩‍🚀 Project
-
-**NOVALUX — Interactive Space Mission Design and Operations Game**
-
-Created for the **NASA Space Apps Challenge 2026**.
-
-*Explore. Design. Simulate. Discover.*
+Sound options currently control procedural effects and optional ambient audio. They do not represent a separate licensed music soundtrack.

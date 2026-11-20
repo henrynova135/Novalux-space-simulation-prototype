@@ -1,12 +1,12 @@
 import { integrateClohessyWiltshire } from "./physics/rendezvous.js";
 /* =========================================================
-   NOVALUX PHASE 5/6 — INTEGRATED ADVANCED EXPLORATION
+   NOVALUX ADVANCED EXPLORATION
    Educational simplified models linked to the active designer.
    ========================================================= */
 
 const canvas = document.getElementById("p5-canvas");
 const ctx = canvas?.getContext("2d");
-if (!canvas || !ctx) throw new Error("Phase 5 canvas is unavailable");
+if (!canvas || !ctx) throw new Error("Exploration canvas is unavailable");
 
 const $ = id => document.getElementById(id);
 const ui = {
@@ -34,8 +34,8 @@ const definitions = {
   rover: {
     kicker: "PLANETARY SURFACE", title: "Lunar & Martian rover operations",
     description: "Explore a three-dimensional planetary terrain with free steering, forward/reverse throttle, rocks, slopes and three science sample sites.",
-    help: "W / S drive · A / D steer · SCIENCE SCAN near a beacon. Drag the 3D view to orbit, use the mouse wheel to zoom, double-click for overhead view, or press C to reset the follow camera. Target arrow points to the next sample. Avoid rocks and conserve battery.",
-    controls: [{id:"left",text:"◀ STEER"},{id:"right",text:"STEER ▶"},{id:"up",text:"▲ DRIVE"},{id:"down",text:"▼ REVERSE"},{action:"scan",text:"SCIENCE SCAN"}]
+    help: "W / S drive · A / D steer · E or SCIENCE SCAN / CHECKPOINT near a beacon. On phones, hold the touch controls and tap SCAN / CHECKPOINT when close. Rotate to landscape for the best view. Drag the 3D view to orbit; double-click for overhead view; press C to reset the follow camera. Avoid rocks and conserve battery.",
+    controls: [{id:"left",text:"◀ STEER"},{id:"right",text:"STEER ▶"},{id:"up",text:"▲ DRIVE"},{id:"down",text:"▼ REVERSE"},{action:"scan",text:"E · SCAN / CHECKPOINT"}]
   },
   crew: {
     kicker: "HABITAT OPERATIONS", title: "Crew life-support management",
@@ -49,13 +49,14 @@ let mode = "reentry", running = false, raf = 0, last = 0, keys = new Set();
 let simulationSpeed = 1;
 let state;
 let activeDesign = null;
-const progressKey = "novalux-phase5-progress-v1";
+const progressKey = "novalux-advanced-exploration-progress-v1";
+const legacyProgressKey = "novalux-phase5-progress-v1";
 const progress = loadProgress();
 const logs = [];
 
 function loadProgress() {
   try {
-    const saved = JSON.parse(localStorage.getItem(progressKey) || "{}");
+    const saved = JSON.parse(localStorage.getItem(progressKey) || localStorage.getItem(legacyProgressKey) || "{}");
     return { reentry: !!saved.reentry, docking: !!saved.docking, rover: !!saved.rover, crew: !!saved.crew };
   } catch { return { reentry:false, docking:false, rover:false, crew:false }; }
 }
@@ -97,7 +98,7 @@ function refreshDesign() {
     return;
   }
   name.textContent = `${activeDesign.platform} · ${activeDesign.destination} mission`;
-  summary.textContent = `${activeDesign.propulsion} · ${activeDesign.instrument}. The Phase 5 vehicle mass and maneuver budget now use your selected design components.`;
+  summary.textContent = `${activeDesign.propulsion} · ${activeDesign.instrument}. The vehicle mass and maneuver budget now use your selected design components.`;
   if (state && mode === "docking") state.fuel = Math.min(100, Math.max(25, activeDesign.propulsionCapability * 10));
 }
 function renderProgress() {
@@ -123,14 +124,14 @@ function setMetric(i, value) { const el=$(metricIds[i]); if (el) el.textContent=
 function setStatus(value) { ui.status.textContent=value; setMetric(3,value.toUpperCase()); }
 function configure(which) {
   mode=which;
-  document.querySelector(".p5-stage")?.classList.toggle("phase6-3d", (which==="rover"||which==="docking") && !!window.NOVALUXPhase6Scene?.available); refreshDesign(); state=defaults(which); running=false; if(raf) cancelAnimationFrame(raf); raf=0;
+  document.querySelector(".p5-stage")?.classList.toggle("exploration-3d", (which==="rover"||which==="docking") && !!window.NOVALUXExplorationScene?.available); refreshDesign(); state=defaults(which); running=false; if(raf) cancelAnimationFrame(raf); raf=0;
   document.querySelectorAll("[data-p5-tab]").forEach(b=>b.classList.toggle("active",b.dataset.p5Tab===which));
   const d=definitions[which]; ui.kicker.textContent=d.kicker; ui.title.textContent=d.title; ui.description.textContent=d.description; ui.help.textContent=d.help;
   ui.controls.innerHTML=d.controls.map(c=>c.id?`<button type="button" data-p5-control="${c.id}">${c.text}</button>`:`<button type="button" data-p5-action="${c.action}">${c.text}</button>`).join("");
   ui.start.textContent="START SIMULATION"; ui.overlay.classList.remove("hidden");
   ui.overlayTitle.textContent=which==="reentry"?"Begin atmospheric entry":which==="docking"?"Begin station approach":which==="rover"?"Deploy the surface rover":"Begin crew operations";
   ui.overlayCopy.textContent=which==="reentry"?"Start at 120 km altitude and guide the vehicle safely to the landing zone.":which==="docking"?"A station is 1.25 km ahead. Use small controlled thrust inputs to close the range.":which==="rover"?"Drive to the marked sample sites and collect three scientific samples.":"Manage life support for 72 simulated hours. Resource levels update as mission time advances.";
-  logs.length=0; log(`PHASE 5 ${which.toUpperCase()} SIMULATION READY`); setStatus("READY"); updateTelemetry(); draw();
+  logs.length=0; log(`${which.toUpperCase()} SIMULATION READY`); setStatus("READY"); updateTelemetry(); draw();
 }
 function updateTelemetry() {
   if(mode==="reentry") {setMetric(0,`${(state.alt/1000).toFixed(1)} km`);setMetric(1,`${Math.hypot(state.vx,state.vy).toFixed(0)} m/s`);setMetric(2,`${state.heat.toFixed(0)}%`);}
@@ -211,7 +212,7 @@ function stepCrew(dt) {
   if(s.oxygen<=0||s.water<=0||s.power<=0){s.failed=true;finish(false,"Life-support emergency","A critical crew resource was exhausted. Enable power save and deploy the solar array earlier.");}
   else if(s.hours>=72){s.hours=72;s.complete=true;finish(true,"72-hour crew operations complete","The crew completed the orbital operations period with life-support reserves remaining.");}
 }
-function draw() {ctx.clearRect(0,0,W,H);if(mode==="reentry")drawReentry();if(mode==="docking")drawDocking();if(mode==="rover")drawRover();if(mode==="crew")drawCrew();if(window.NOVALUXPhase6Scene?.available&&(mode==="docking"||mode==="rover"))window.NOVALUXPhase6Scene.render(mode,state);}
+function draw() {ctx.clearRect(0,0,W,H);if(mode==="reentry")drawReentry();if(mode==="docking")drawDocking();if(mode==="rover")drawRover();if(mode==="crew")drawCrew();if(window.NOVALUXExplorationScene?.available&&(mode==="docking"||mode==="rover"))window.NOVALUXExplorationScene.render(mode,state);}
 function stars(){ctx.fillStyle="#d8efff";for(let i=0;i<75;i++){const x=(i*137)%W,y=(i*71)%H;ctx.globalAlpha=.25+(i%4)*.15;ctx.fillRect(x,y,2,2);}ctx.globalAlpha=1;}
 function drawReentry(){const s=state;const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,"#030a18");g.addColorStop(.55,"#102b4b");g.addColorStop(1,"#b96e43");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);stars();ctx.fillStyle="rgba(55,151,224,.17)";ctx.fillRect(0,H*.67,W,H*.33);ctx.fillStyle="#152d3e";ctx.beginPath();ctx.ellipse(500,590,690,160,0,Math.PI,Math.PI*2);ctx.fill();
   const y=70+(1-Math.max(0,s.alt)/120000)*360;ctx.save();ctx.translate(500,y);ctx.rotate(s.bank*.16);ctx.fillStyle="#c9d9e5";ctx.beginPath();ctx.moveTo(-45,10);ctx.lineTo(0,-25);ctx.lineTo(45,10);ctx.lineTo(30,25);ctx.lineTo(-30,25);ctx.closePath();ctx.fill();ctx.fillStyle="#f28b46";ctx.beginPath();ctx.moveTo(-25,20);ctx.lineTo(0,70+Math.min(80,s.heat));ctx.lineTo(25,20);ctx.fill();if(s.chute){ctx.strokeStyle="#e8f4ff";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(-12,-20);ctx.lineTo(-55,-85);ctx.moveTo(12,-20);ctx.lineTo(55,-85);ctx.stroke();ctx.fillStyle="#eaf4ff";ctx.beginPath();ctx.arc(0,-90,58,Math.PI,0);ctx.fill();}ctx.restore();
@@ -225,8 +226,9 @@ function drawCrew(){const s=state;ctx.fillStyle="#071523";ctx.fillRect(0,0,W,H);
 
 function applyControl(control, pressed) { if(pressed)keys.add(control);else keys.delete(control); }
 function action(name) {
+  if(name==="scan"&&mode==="rover"&&!running){log("START THE ROVER SIMULATION BEFORE USING A CHECKPOINT SCAN");return;}
   if(name==="parachute"&&mode==="reentry"){if(state.alt<=12000&&!state.chute){state.chute=true;log("PARACHUTE DEPLOYED");}else log("PARACHUTE DEPLOYMENT WINDOW: BELOW 12 KM");}
-  if(name==="scan"&&mode==="rover"){state.scanReady=true;log("SCIENCE SCAN ACTIVE — MOVE WITHIN 14 M OF A MARKED SITE");}
+  if(name==="scan"&&mode==="rover"){const sites=[[90,-38],[260,58],[445,-48]];const target=sites.findIndex(([x,z],i)=>!state.samples[i]&&Math.hypot(state.x-x,state.z-z)<=18);if(target>=0){state.samples[target]=true;state.scanReady=false;log(`CHECKPOINT ${target+1}/3 CONFIRMED — SCIENCE SAMPLE COLLECTED`);if(state.samples.every(Boolean))finish(true,"Surface survey complete","All three science checkpoints were confirmed. Rover operations successful.");}else{state.scanReady=true;const nearest=sites.map(([x,z],i)=>({i,d:Math.hypot(state.x-x,state.z-z)})).filter(v=>!state.samples[v.i]).sort((a,b)=>a.d-b.d)[0];log(nearest?`CHECKPOINT NOT IN RANGE — MOVE WITHIN 18 M OF SAMPLE ${nearest.i+1} (${nearest.d.toFixed(0)} M AWAY), THEN PRESS E / SCAN`:"ALL CHECKPOINTS COMPLETE");}}
   if(name==="power"&&mode==="crew"){state.powerSave=!state.powerSave;log(`POWER SAVE ${state.powerSave?"ENABLED":"DISABLED"}`);}
   if(name==="solar"&&mode==="crew"){state.solar=true;log("SOLAR ARRAY DEPLOYED — GENERATION INCREASED");}
   draw();updateTelemetry();
@@ -239,10 +241,10 @@ document.querySelectorAll("[data-p5-tab]").forEach(b=>b.addEventListener("click"
 ui.controls.addEventListener("pointerdown",e=>{const b=e.target.closest("[data-p5-control]");if(b){e.preventDefault();applyControl(b.dataset.p5Control,true);}});
 ["pointerup","pointerleave","pointercancel"].forEach(type=>ui.controls.addEventListener(type,()=>keys.clear()));
 ui.controls.addEventListener("click",e=>{const b=e.target.closest("[data-p5-action]");if(b)action(b.dataset.p5Action);});
-window.addEventListener("keydown",e=>{if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","a","d","w","s","A","D","W","S"].includes(e.key)){if(document.getElementById("phase5-view")?.classList.contains("active")){e.preventDefault();const map={ArrowLeft:"left",a:"left",A:"left",ArrowRight:"right",d:"right",D:"right",ArrowUp:"up",w:"up",W:"up",ArrowDown:"down",s:"down",S:"down"};applyControl(map[e.key],true);}}});
+window.addEventListener("keydown",e=>{if(!document.getElementById("exploration-view")?.classList.contains("active"))return;const tag=e.target?.tagName?.toLowerCase();if(["input","select","textarea"].includes(tag)||e.target?.isContentEditable)return;if((e.key==="e"||e.key==="E")&&mode==="rover"&&running){e.preventDefault();action("scan");return;}if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","a","d","w","s","A","D","W","S"].includes(e.key)){e.preventDefault();const map={ArrowLeft:"left",a:"left",A:"left",ArrowRight:"right",d:"right",D:"right",ArrowUp:"up",w:"up",W:"up",ArrowDown:"down",s:"down",S:"down"};applyControl(map[e.key],true);}});
 window.addEventListener("keyup",e=>{const map={ArrowLeft:"left",a:"left",A:"left",ArrowRight:"right",d:"right",D:"right",ArrowUp:"up",w:"up",W:"up",ArrowDown:"down",s:"down",S:"down"};if(map[e.key])applyControl(map[e.key],false);});
 window.addEventListener("blur",()=>keys.clear());
-window.addEventListener("novalux-phase6-3d-ready",()=>{document.querySelector(".p5-stage")?.classList.toggle("phase6-3d",mode==="rover"||mode==="docking");draw();});
+window.addEventListener("novalux-exploration-3d-ready",()=>{document.querySelector(".p5-stage")?.classList.toggle("exploration-3d",mode==="rover"||mode==="docking");draw();});
 updateTimeScale(ui.timeScale.value);
 renderProgress();
 refreshDesign();

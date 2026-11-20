@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-const root = new URL('../', import.meta.url).pathname;
+import { fileURLToPath } from 'node:url';
+const root = fileURLToPath(new URL('../', import.meta.url));
 const html = readFileSync(join(root,'index.html'),'utf8');
 const js = readFileSync(join(root,'src/expedition-command.js'),'utf8');
 const css = readFileSync(join(root,'styles.css'),'utf8');
@@ -21,12 +22,12 @@ test('Mission planner routes into existing designer and flight operations',()=>{
  assert.ok(js.includes('data-view=\"designer\"'));
 });
 test('Campaign state persists and includes rewards, station, crew and discoveries',()=>{
- assert.match(js,/localStorage\.getItem\(STORE/);
- assert.match(js,/localStorage\.setItem\(STORE/);
+ assert.match(js,/readLocalJSON\(STORE/);
+ assert.match(js,/writeLocalJSON\(STORE/);
  for (const token of ['xp: 0','credits: 1200','crew:','station:','discoveries:','shipParts:']) assert.ok(js.includes(token),token);
 });
 test('Rover, rendezvous and earlier phases are preserved in source tree',()=>{
- for (const file of ['src/phase6-3d.js','src/phase5-exploration.js','src/interplanetary-missions.js','src/physics/rendezvous.js']) assert.ok(readFileSync(join(root,file),'utf8').length>100);
+ for (const file of ['src/exploration-3d.js','src/advanced-exploration.js','src/interplanetary-missions.js','src/physics/rendezvous.js']) assert.ok(readFileSync(join(root,file),'utf8').length>100);
 });
 test('Responsive campaign layout is present',()=>{
  assert.match(css,/@media\(max-width:760px\)/);

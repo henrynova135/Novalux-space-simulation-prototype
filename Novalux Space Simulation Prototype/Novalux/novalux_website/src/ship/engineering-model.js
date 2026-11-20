@@ -1,4 +1,4 @@
-/* NOVALUX Phase 8 spacecraft engineering model.
+/* NOVALUX existing subsystem spacecraft engineering model.
  * Educational/game model only; component values are illustrative, not flight-certified.
  */
 export const ENGINEERING_PARTS = Object.freeze({

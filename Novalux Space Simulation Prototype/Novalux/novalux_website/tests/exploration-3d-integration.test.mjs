@@ -4,12 +4,12 @@ import { readFileSync } from "node:fs";
 import { integrateClohessyWiltshire } from "../src/physics/rendezvous.js";
 
 const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
-const phase = readFileSync(new URL("../src/phase5-exploration.js", import.meta.url), "utf8");
-const scene = readFileSync(new URL("../src/phase6-3d.js", import.meta.url), "utf8");
+const phase = readFileSync(new URL("../src/advanced-exploration.js", import.meta.url), "utf8");
+const scene = readFileSync(new URL("../src/exploration-3d.js", import.meta.url), "utf8");
 
-test("Phase 6 loads a dedicated WebGL scene for rover and docking", () => {
+test("existing subsystem loads a dedicated WebGL scene for rover and docking", () => {
   assert.match(html, /id="p5-3d-canvas"/);
-  assert.match(html, /src\/phase6-3d\.js/);
+  assert.match(html, /src\/exploration-3d\.js/);
   assert.match(scene, /WebGLRenderer/);
   assert.match(scene, /samplePositions/);
   assert.match(scene, /station/);
