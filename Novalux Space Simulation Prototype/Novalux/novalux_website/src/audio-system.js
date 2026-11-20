@@ -9,8 +9,19 @@
   let ctx = null, master = null, engineGain = null, engineOsc = null, engineFilter = null;
   let ambientGain = null, ambientOsc = null, noiseSource = null, noiseGain = null;
   let enabled = true, unlocked = false, ambienceOn = false;
-  const savedVolume = Number(localStorage.getItem("novalux-audio-volume"));
+  let savedVolume = NaN;
+  try {
+    savedVolume = Number(localStorage.getItem("novalux-audio-volume"));
+    const savedEnabled = localStorage.getItem("novalux-audio-enabled");
+    const savedAmbience = localStorage.getItem("novalux-audio-ambience");
+    if (savedEnabled !== null) enabled = savedEnabled === "true";
+    if (savedAmbience !== null) ambienceOn = savedAmbience === "true";
+  } catch (_) { /* Storage may be disabled. */ }
   if (Number.isFinite(savedVolume) && savedVolume >= 0 && savedVolume <= 100) volume.value = String(savedVolume);
+  ambienceToggle.checked = ambienceOn;
+  toggle.setAttribute("aria-pressed",String(enabled));
+  toggle.textContent=enabled ? "♫ SOUND ON" : "♫ SOUND OFF";
+  toggle.setAttribute("aria-label",enabled ? "Mute sound effects" : "Enable sound effects");
   volumeValue.value = `${volume.value}%`;
 
   function ensureAudio() {
@@ -103,20 +114,28 @@
   function syncAmbience() { ambienceOn=ambienceToggle.checked; if (ambienceOn) startAmbience(); else stopAmbience(); }
 
   toggle.addEventListener("click", () => {
-    enabled=!enabled; toggle.setAttribute("aria-pressed",String(enabled));
+    enabled=!enabled;
+    try { localStorage.setItem("novalux-audio-enabled",String(enabled)); } catch (_) { /* session-only */ }
+    toggle.setAttribute("aria-pressed",String(enabled));
     toggle.textContent=enabled ? "♫ SOUND ON" : "♫ SOUND OFF";
     toggle.setAttribute("aria-label",enabled ? "Mute sound effects" : "Enable sound effects");
     if (enabled) { ensureAudio(); setMaster(); click(); if (ambienceOn) startAmbience(); }
     else { setMaster(); stopEngine(); stopAmbience(); }
   });
   volume.addEventListener("input", () => {
-    volumeValue.value=`${volume.value}%`; localStorage.setItem("novalux-audio-volume",volume.value); setMaster();
+    volumeValue.value=`${volume.value}%`;
+    try { localStorage.setItem("novalux-audio-volume",volume.value); } catch (_) { if (hint) hint.textContent = "Volume applies for this session; browser storage is unavailable"; }
+    setMaster();
   });
-  ambienceToggle.addEventListener("change", () => { if (enabled) { ensureAudio(); syncAmbience(); } });
+  ambienceToggle.addEventListener("change", () => {
+    ambienceOn=ambienceToggle.checked;
+    try { localStorage.setItem("novalux-audio-ambience",String(ambienceOn)); } catch (_) { /* session-only */ }
+    if (enabled) { ensureAudio(); syncAmbience(); }
+  });
 
   // Unlock audio on the first real user gesture, as required by modern browsers.
-  document.addEventListener("pointerdown", () => { if (!unlocked && enabled) ensureAudio(); }, {once:true,passive:true});
-  document.addEventListener("keydown", () => { if (!unlocked && enabled) ensureAudio(); }, {once:true});
+  document.addEventListener("pointerdown", () => { if (!unlocked && enabled) { ensureAudio(); if (ambienceOn) startAmbience(); } }, {once:true,passive:true});
+  document.addEventListener("keydown", () => { if (!unlocked && enabled) { ensureAudio(); if (ambienceOn) startAmbience(); } }, {once:true});
 
   const special = new Map([
     ["launch-ignite", () => { tone({freq:70,endFreq:42,duration:.7,gain:.18,type:"sawtooth"}); noiseBurst(.9,.22,700); startEngine(); }],
@@ -128,11 +147,11 @@
     ["launch-transfer", () => { stopEngine(); click(); }]
   ]);
   document.addEventListener("click", event => {
-    const button=event.target.closest("button"); if (!button || button.disabled || button.closest("#novalux-audio")) return;
+    const button=event.target.closest("button"); if (!button || button.disabled || button.closest("#settings-audio-controls")) return;
     const action=special.get(button.id); if (action) action(); else click();
   }, true);
   document.addEventListener("change", event => {
-    if (event.target.matches("select") && !event.target.closest("#novalux-audio")) click();
+    if (event.target.matches("select") && !event.target.closest("#settings-audio-controls")) click();
   }, true);
   document.addEventListener("novalux:launchcomplete", () => { stopEngine(); confirm(); });
   document.addEventListener("novalux:launchreset", stopEngine);
@@ -147,7 +166,7 @@
   // Play a short failure cue when the interplanetary result panel reports failure.
   if (window.MutationObserver) {
     let previous="";
-    // The Phase 4 result panel is created by a deferred module, so observe the
+    // The existing subsystem result panel is created by a deferred module, so observe the
     // document and detect it whenever that module adds or updates the panel.
     new MutationObserver(() => {
       const result=$("s4-result");

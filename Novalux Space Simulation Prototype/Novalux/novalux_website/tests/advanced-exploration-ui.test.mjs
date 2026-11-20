@@ -3,15 +3,15 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
-const moduleSource = readFileSync(new URL('../src/phase5-exploration.js', import.meta.url), 'utf8');
+const moduleSource = readFileSync(new URL('../src/advanced-exploration.js', import.meta.url), 'utf8');
 
-test('Phase 5 is reachable from primary navigation and loads its module', () => {
-  assert.match(html, /data-view="phase5"/);
-  assert.match(html, /id="phase5-view"/);
-  assert.match(html, /src="src\/phase5-exploration\.js"/);
+test('Advanced Exploration is reachable from primary navigation and loads its module', () => {
+  assert.match(html, /data-view="exploration"/);
+  assert.match(html, /id="exploration-view"/);
+  assert.match(html, /src="src\/advanced-exploration\.js"/);
 });
 
-test('Phase 5 exposes all four playable activities and their control surfaces', () => {
+test('Advanced Exploration exposes all four playable activities and their control surfaces', () => {
   for (const activity of ['reentry', 'docking', 'rover', 'crew']) {
     assert.match(html, new RegExp(`data-p5-tab="${activity}"`));
     assert.ok(moduleSource.includes(`${activity}: {`), `${activity} activity definition exists`);
@@ -21,7 +21,7 @@ test('Phase 5 exposes all four playable activities and their control surfaces', 
   }
 });
 
-test('Phase 5 contains objective checks for safe re-entry, soft docking, rover samples, and crew duration', () => {
+test('Advanced Exploration contains objective checks for safe re-entry, soft docking, rover samples, and crew duration', () => {
   assert.match(moduleSource, /landing<18/);
   assert.match(moduleSource, /range<20&&speed<\.5/);
   assert.match(moduleSource, /s\.samples\.every\(Boolean\)/);
@@ -29,7 +29,7 @@ test('Phase 5 contains objective checks for safe re-entry, soft docking, rover s
 });
 
 
-test('Phase 5 provides adjustable mission time and bounded physics substeps', () => {
+test('Advanced Exploration provides adjustable mission time and bounded physics substeps', () => {
   assert.match(html, /id="p5-time-scale"/);
   assert.match(html, /id="p5-time-value"/);
   assert.match(html, /min="0\.5" max="20" step="0\.5"/);
@@ -38,7 +38,7 @@ test('Phase 5 provides adjustable mission time and bounded physics substeps', ()
   assert.match(moduleSource, /updateTimeScale/);
 });
 
-test('Phase 6 bridge reads the active designer and displays linked spacecraft identity', () => {
+test('Exploration design bridge reads the active designer and displays linked spacecraft identity', () => {
   assert.match(html, /id="p6-craft-name"/);
   assert.match(html, /id="p6-craft-summary"/);
   assert.match(html, /id="p6-refresh-design"/);
@@ -48,7 +48,7 @@ test('Phase 6 bridge reads the active designer and displays linked spacecraft id
   assert.match(moduleSource, /propulsionCapability/);
 });
 
-test('Phase 6 saves successful activity progression across reloads', () => {
+test('Exploration progress saves successful activity progression across reloads', () => {
   assert.match(html, /id="p6-progress-count"/);
   assert.match(html, /id="p6-progress-fill"/);
   assert.match(moduleSource, /novalux-phase5-progress-v1/);

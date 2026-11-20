@@ -1,4 +1,5 @@
 /* NOVALUX Expedition Command — integrated educational campaign layer. */
+import { readLocalJSON, writeLocalJSON } from './storage.js';
 const $ = (id) => document.getElementById(id);
 const STORE = 'novalux.expedition.v1';
 const defaults = () => ({
@@ -10,9 +11,9 @@ const defaults = () => ({
   ], shipParts: ['habitat','engine','solar','science'], destination:'moon', missionStep:0,
   emergency:null, lastReward:0
 });
-function load(){try{return {...defaults(),...JSON.parse(localStorage.getItem(STORE)||'{}')}}catch{return defaults()}}
+function load(){return {...defaults(),...readLocalJSON(STORE,{})}}
 let state=load();
-const save=()=>localStorage.setItem(STORE,JSON.stringify(state));
+const save=()=>{const ok=writeLocalJSON(STORE,state);if(!ok)notify('Progress is active for this session, but browser storage is unavailable. It may not persist after closing the page.');return ok;};
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:0});
 const campaignMilestones=['mission-checkpoint-1','mission-checkpoint-3','mission-checkpoint-7','station-lab','station-dock','discovery-regolith','discovery-weather'];
 const destinations={earth:{name:'Earth orbit',distance:0,transfer:0,departure:0,capture:0,landing:0},moon:{name:'Moon',distance:384400,transfer:4.5,departure:3150,capture:850,landing:1900},mars:{name:'Mars',distance:225000000,transfer:259,departure:5700,capture:2100,landing:1250}};
@@ -42,7 +43,7 @@ function bind(){
  $('ex-destination').addEventListener('change',e=>{state.destination=e.target.value;state.missionStep=0;save();render()});
  $('ex-next-step').addEventListener('click',advance);
  $('ex-configure-mission').addEventListener('click',()=>{document.querySelector(`.mission-link[data-mission="${state.destination}"]`)?.click();document.querySelector('.nav-item[data-view="designer"]')?.click();notify(`Designer opened for ${destinations[state.destination].name}. Configure and launch your vehicle to unlock detailed flight operations.`)});
- $('ex-open-flight').addEventListener('click',()=>{document.querySelector('.nav-item[data-view="simulation"]')?.click();notify('Mission Simulation opened. Complete verified launch and orbital insertion to unlock Phase 4 transfer, capture and landing operations.')});
+ $('ex-open-flight').addEventListener('click',()=>{document.querySelector('.nav-item[data-view="simulation"]')?.click();notify('Mission Simulation opened. Complete verified launch and orbital insertion to unlock transfer, capture, and landing operations.')});
  $('ex-station-modules').addEventListener('click',e=>{const id=e.target.dataset.station;if(!id||state.station.includes(id))return;const p=stationParts[id];if(state.credits<p.cost){notify('Not enough credits to construct this station module.');return;}state.credits-=p.cost;state.station.push(id);state.xp+=65;if(id==='lab'||id==='dock')state.completed.push(`station-${id}`);save();render();notify(`${p.name} installed. +65 XP.`)});
  $('ex-trigger-emergency').addEventListener('click',()=>{if(state.emergency){notify('Resolve the current emergency first.');return;}const events=['Cabin pressure leak','Electrical bus overload','Cooling-loop pump failure','Crew medical alert'];state.emergency=events[Math.floor(Math.random()*events.length)];state.crew.forEach(c=>c.stress=Math.min(100,c.stress+12));save();render();notify('Emergency declared. Select a response.')});
  $('ex-resolve-emergency').addEventListener('click',()=>{if(!state.emergency){notify('No active emergency to resolve.');return;}state.emergency=null;state.crew.forEach(c=>{c.health=Math.min(100,c.health+2);c.stress=Math.max(0,c.stress-18)});state.xp+=90;state.credits+=45;save();render();notify('Emergency response completed. Crew stabilized. +90 XP, +45 CR.')});

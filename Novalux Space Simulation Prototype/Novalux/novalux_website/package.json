@@ -1,0 +1,16 @@
+{
+  "name": "novalux-space-mission-design-game",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "NOVALUX educational space mission design and operations game",
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "test": "node --test",
+    "check": "node scripts/check-source.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -29,7 +29,7 @@ function mount() {
   panel.className = "panel orbital-workspace";
   panel.style.cssText = "display:none;margin:24px 0;padding:24px;background:#081522;color:#e8f4ff;border:1px solid #24435b;border-radius:14px";
   panel.innerHTML = `
-    <div class="orbital-heading"><div><div class="eyebrow">NOVALUX // PHASE 4</div><h2>Interplanetary Mission Operations</h2><p id="s4-subtitle">Awaiting verified Earth parking orbit</p></div><span id="s4-status" class="orbital-status">LOCKED</span></div>
+    <div class="orbital-heading"><div><div class="eyebrow">NOVALUX // INTERPLANETARY OPERATIONS</div><h2>Interplanetary Mission Operations</h2><p id="s4-subtitle">Awaiting verified Earth parking orbit</p></div><span id="s4-status" class="orbital-status">LOCKED</span></div>
     <div style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(260px,1fr);gap:18px;margin-top:18px">
       <div style="min-width:0"><canvas id="s4-canvas" width="1000" height="560" style="width:100%;height:auto;display:block;background:#020813;border-radius:10px;border:1px solid #1c344a"></canvas>
         <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px"><button id="s4-inject" class="primary-button">PERFORM INJECTION BURN</button><button id="s4-play" class="orbital-button" disabled>START CRUISE</button><button id="s4-capture" class="orbital-button" disabled>CAPTURE INTO ORBIT</button><button id="s4-land" class="orbital-button" disabled>BEGIN LANDING</button><button id="s4-reset" class="orbital-button">RESET MISSION</button></div>
